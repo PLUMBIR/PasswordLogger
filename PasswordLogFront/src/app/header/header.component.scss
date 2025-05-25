@@ -1,0 +1,411 @@
+nz-header {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    padding: 0;
+}
+
+.logo {
+    color: #d71340;
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 1.5;
+    font-family: "Source Sans 3", sans-serif;
+    padding: 0 24px 0 32px;
+    user-select: none;
+}
+
+.nav-left {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 100%;
+    padding-bottom: 0;
+    list-style-type: none;
+    gap: 20px;
+    margin: 0px;
+}
+
+.nav-left-item {
+    color: #000000;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 1.5;
+    font-family: "Source Sans 3", sans-serif;
+    cursor: pointer;
+    user-select: none;
+
+    nz-icon {
+        margin-top: 8px;
+        font-size: 10px;
+        color: #000000;
+    }
+}
+
+.nav-left-item span {
+    margin-right: 6px;
+}
+
+.nav-left-item:hover {
+    span {
+        color: #d22;
+    }
+
+    nz-icon {
+        color: #d22;
+    }
+}
+
+.nav-right {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 100%;
+    padding-bottom: 0;
+    list-style-type: none;
+    gap: 20px;
+    margin: 0 0 0 auto;
+    padding-right: 24px;
+}
+
+.signup-btn {
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: "Source Sans 3", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 24px;
+    letter-spacing: -0.16px;
+    padding: 8px 16px;
+    position: relative;
+    text-align: center;
+    min-height: 40px;
+    background: #d71340;
+    color: #FFFFFF;
+}
+
+.signup-btn:hover {
+    background: #b40d34;
+}
+
+.contacts-btn {
+    font-family: "Source Sans 3", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 24px;
+    letter-spacing: -0.16px;
+    background: transparent;
+    border: 0;
+    color: #000000;
+    outline: none;
+    transition: none;
+    cursor: pointer;
+
+    span {
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+
+    .comment-icon{
+        font-size: 14px;
+    }
+
+    .down-icon{
+        font-size: 10px;
+    }
+}
+
+.contacts-btn:hover {
+    color: #d22;
+
+    .comment-icon{
+        color: #d22;
+    }
+
+    .down-icon{
+        color: #d22;
+    }
+}
+
+.signin-btn {
+    font-family: "Source Sans 3", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 24px;
+    letter-spacing: -0.16px;
+    background: transparent;
+    border: 0;
+    color: #000000;
+    outline: none;
+    transition: none;
+    cursor: pointer;
+
+    nz-icon {
+        font-size: 14px;
+    }
+
+    span {
+        margin-left: 5px;
+    }
+}
+
+.signin-btn:hover {
+    color: #d22;
+
+    nz-icon {
+        color: #d22;
+    }
+}
+
+.menu-btn {
+    background: transparent;
+    border: 0;
+    color: #000000;
+    outline: none;
+    transition: none;
+    padding: 0;
+    display: none;
+    cursor: pointer;
+
+    nz-icon {
+        font-size: 21px;
+    }
+}
+
+.menu-btn:hover {
+    color: #d22;
+}
+
+.dropdown-item {
+    min-width: 250px;
+    height: 40px;
+    font-family: "Source Sans 3", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    letter-spacing: -0.16px;
+
+    span {
+        margin-left: 10px;
+    }
+
+    nz-icon {
+        font-size: 20px !important;
+    }
+}
+
+.dropdown-item:hover {
+    color: #d22;
+}
+
+.dropdown-comment,
+.dropdown-user {
+    display: none;
+}
+
+// modal-signup
+::ng-deep .modal-signup .ant-modal-content {
+    border: 0;
+    border-radius: 14px;
+}
+
+.modal-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+
+    h2 {
+        color: #506175;
+        font-size: 28px;
+        margin: 0;
+        font-weight: 500;
+        line-height: 1.2;
+        font-family: 'Gibson', 'Open Sans', 'Helvetica', Arial, sans-serif;
+    }
+
+    p {
+        color: #506175;
+        margin: 0;
+        margin-right: 32px;
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 1.2;
+        font-family: 'Gibson', 'Open Sans', 'Helvetica', Arial, sans-serif;
+    }
+
+    a {
+        color: #00A3E0;
+    }
+}
+
+.modal-title a:hover {
+    color: #23527c;
+    text-decoration: underline;
+}
+
+nz-divider {
+    margin: 18px 0px;
+}
+
+.last-form-item {
+    margin-bottom: 0;
+}
+
+::ng-deep .modal-signup .ant-modal-footer {
+    max-width: 450px;
+    margin: 0 auto;
+    padding: 10px 0px;
+}
+
+.modal-btn {
+    position: relative;
+    width: 100%;
+    margin: 10px 0px;
+    min-height: 50px;
+    font-size: 22px;
+    color: #fff;
+    background-color: #d32d27;
+    border: 0;
+    border-radius: 30px;
+    box-shadow: 0 1px 4px 0 rgba(0, 0, 0, .2);
+    font-family: 'Gibson', 'Open Sans', 'Helvetica', Arial, sans-serif;
+    cursor: pointer;
+}
+
+// modal signin
+.modal-logo { 
+    text-align: center;
+
+    span {
+        color: #d71340;
+        font-size: 24px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 1.5;
+        font-family: "Source Sans 3", sans-serif;
+        user-select: none;
+    }
+}
+
+.modal-text {
+    margin: 21px 0px 0px 0px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+
+    h1 {
+        font-family: 'Open Sans', 'Helvetica', Arial, sans-serif;
+        font-size: 21px;
+        color: rgb(60, 72, 98);
+    }
+
+    p {
+        color: #506175;
+        margin: 0;
+        font-size: 18px;
+        font-weight: 500;
+        line-height: 1.2;
+        font-family: 'Gibson', 'Open Sans', 'Helvetica', Arial, sans-serif;
+    }
+
+    a {
+        color: rgb(43, 123, 177);
+    }
+}
+
+.modal-text a:hover {
+    text-decoration: underline;
+}
+
+.forgot-password {
+    font-size: 16px;
+    line-height: 1.4em;
+    font-weight: 600;
+    color: rgb(43, 123, 177);
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+.modal-footer {
+    display: flex;
+    flex-direction: column;
+
+    div {
+        text-align: center;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+}
+
+input {
+    width: 100%;
+    height: 50px;
+    background-color: #fff;
+    border: solid 1px #c3cbcb;
+    border-radius: 5px;
+    box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.15);
+    font-family: 'Gibson', 'Open Sans', 'Helvetica', Arial, sans-serif;
+    font-size: 16px
+}
+
+@media (max-width: 1580px) {
+    .contacts-btn, 
+    .signin-btn {
+        padding: 0;
+
+        nz-icon {
+            font-size: 21px !important;
+        }
+    }
+
+    .nav-right-item button span,
+    .down-icon {
+        display: none;
+    }
+
+    .nav-right {
+        padding: 24px;
+    }
+}
+
+@media (max-width: 1250px) {
+    .logo {
+        font-size: 28px;
+    }
+    
+    .nav-left {
+        display: none;
+    }
+
+    .menu-btn {
+        display: block;
+    }
+
+    .nav-right {
+        padding-right: 24px;
+    }
+}
+
+@media (max-width: 540px) {
+    .contacts-btn,
+    .signin-btn {
+        display: none;
+    }
+
+    .dropdown-comment,
+    .dropdown-user {
+        display: block;
+    }
+
+    .nav-right {
+        gap: 5px;
+    }
+}

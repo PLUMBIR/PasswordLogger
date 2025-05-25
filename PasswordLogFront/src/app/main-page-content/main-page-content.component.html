@@ -1,0 +1,113 @@
+<div class="main-page">
+    <div class="left-menu" [ngClass]="{'collapsed': isCollapsed}">
+          <ul nz-menu nzMode="inline" [nzInlineCollapsed]="isCollapsed">
+            <li
+              nz-menu-item
+              (click)="toggleCollapsed()"
+            >
+              <nz-icon [nzType]="isCollapsed ? 'arrow-right' : 'arrow-left'" />
+              <span>Свернуть меню</span>
+            </li>
+            <nz-divider></nz-divider>
+            <li
+              nz-menu-item
+              nz-tooltip
+              [nzTooltipTitle]="isCollapsed ? 'Все элементы' : ''"
+              nzSelected
+            >
+              <nz-icon nzType="home" />
+              <span>Все элементы</span>
+            </li>
+            <nz-divider></nz-divider>
+            <li
+              nz-menu-item
+              nz-tooltip
+              [nzTooltipTitle]="isCollapsed ? 'Пароли' : ''"
+            >
+              <nz-icon nzType="lock" />
+              <span>Пароли</span>
+            </li>
+            <li
+              nz-menu-item
+              nz-tooltip
+              [nzTooltipTitle]="isCollapsed ? 'Заметки' : ''"
+            >
+              <nz-icon nzType="file" />
+              <span>Заметки</span>
+            </li>
+            <li
+              nz-menu-item
+              nz-tooltip
+              [nzTooltipTitle]="isCollapsed ? 'Адреса' : ''"
+            >
+              <nz-icon nzType="global" />
+              <span>Адреса</span>
+            </li>
+            <nz-divider></nz-divider>
+            <li
+              nz-menu-item
+              nz-tooltip
+              [nzTooltipTitle]="isCollapsed ? 'Данные карт' : ''"
+            >
+              <nz-icon nzType="credit-card" />
+              <span>Данные карт</span>
+            </li>
+            <li
+              nz-menu-item
+              nz-tooltip
+              [nzTooltipTitle]="isCollapsed ? 'Банковские аккаунты' : ''"
+            >
+              <nz-icon nzType="bank" />
+              <span>Банковские аккаунты</span>
+            </li>
+          </ul>
+    </div>
+    <div class="right-main-content">
+        <div class="right-main-content-header">
+            <div class="right-main-content-header-logo">
+                ПАРОЛЬНИК
+            </div>
+            <div class="right-main-content-header-search">
+                <nz-input-group [nzSuffix]="suffixIconSearch">
+                    <input type="text" nz-input placeholder="Поиск"/>
+                  </nz-input-group>
+                  <ng-template #suffixIconSearch>
+                    <nz-icon nzType="search" />
+                  </ng-template>
+            </div>
+            <div class="right-main-content-header-user">
+                <div class="avatar">
+                    <img src="user-avatar.png" alt="">
+                </div>
+                <div class="user-email">
+                    dyrachyoprime&#64;gmail.com
+                </div>
+                <div class="user-icon">
+                    <nz-icon nzType="down" nzTheme="outline" />
+                </div>
+            </div>
+        </div>
+        <div class="title-category">
+            <h3>Все элементы</h3>
+            <div class="sort-items">
+                <div class="order-options">
+                    Сортировка по:
+                    <span>а-я</span>
+                    <nz-icon nzType="down" nzTheme="outline" />
+                </div>
+            </div>
+        </div>
+        <div style="margin: 0 48px;">
+            <nz-divider style="margin-bottom: 12px;"></nz-divider>
+        </div>
+        <div class="cards">
+            @for (itemCard of passwordCards$(); track itemCard) {
+                <password-card [card]="itemCard"></password-card>
+            }
+        </div>
+        <nz-float-button style="height: 55px; width: 55px; right: 60px;" [nzIcon]="icon" (nzOnClick)="showAllItemsModal()"></nz-float-button>
+        <ng-template #icon>
+            <nz-icon nzType="plus" nzTheme="outline" style="color: #fff;"></nz-icon>
+        </ng-template>
+    </div>
+</div>

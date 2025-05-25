@@ -1,0 +1,80 @@
+<nz-header>
+    <div class="logo">ПАРОЛЬНИК</div>
+    <ul class="nav-left">
+        <li class="nav-left-item">
+            <span>Продукция</span>
+            <nz-icon nzType="down" nzTheme="outline"/>
+        </li>
+        <li class="nav-left-item">
+            <span>Функции</span>
+            <nz-icon nzType="down" nzTheme="outline" />
+        </li>
+        <li class="nav-left-item">
+            <span>Ценообразование</span>
+            <nz-icon nzType="down" nzTheme="outline" />
+        </li>
+        <li class="nav-left-item">
+            <span>Партнеры</span>
+            <nz-icon nzType="down" nzTheme="outline" />
+        </li>
+        <li class="nav-left-item">
+            <span>Поддержка</span>
+            <nz-icon nzType="down" nzTheme="outline" />
+        </li>
+    </ul>
+    <ul class="nav-right">
+        <li class="nav-right-item">
+            <button class="signup-btn" (click)="showModalSignUp()">
+                Регистрация
+            </button>
+        </li>
+        <li class="nav-right-item">
+            <button class="contacts-btn">
+                <nz-icon class="comment-icon" nzType="comment" nzTheme="outline" />
+                <span>Контакты</span>
+                <nz-icon class="down-icon" nzType="down" nzTheme="outline" />
+            </button>
+        </li>
+        <li class="nav-right-item">
+            <button class="signin-btn" (click)="showModalSignIn()">
+                <nz-icon nzType="user" nzTheme="outline" />
+                <span>Вход</span>
+            </button>
+        </li>
+        <button class="menu-btn" nz-dropdown nzTrigger="click" [nzDropdownMenu]="menu">
+            <nz-icon nzType="menu" nzTheme="outline"></nz-icon>
+        </button>
+        <nz-dropdown-menu #menu="nzDropdownMenu">
+            <ul nz-menu>
+                <li nz-menu-item class="dropdown-item">
+                    <nz-icon nzType="product" nzTheme="outline" />
+                    <span>Продукция</span>
+                </li>
+                <li nz-menu-item class="dropdown-item">
+                    <nz-icon nzType="dashboard" nzTheme="outline" />
+                    <span>Функции</span>
+                </li>
+                <li nz-menu-item class="dropdown-item">
+                    <nz-icon nzType="dollar" nzTheme="outline" />
+                    <span>Ценообразование</span>
+                </li>
+                <li nz-menu-item class="dropdown-item">
+                    <nz-icon nzType="usergroup-add" nzTheme="outline" />
+                    <span>Партнеры</span>
+                </li>
+                <li nz-menu-item class="dropdown-item">
+                    <nz-icon nzType="heart" nzTheme="outline" />
+                    <span>Поддержка</span>
+                </li>
+                <li nz-menu-item class="dropdown-item dropdown-comment">
+                    <nz-icon nzType="comment" nzTheme="outline" />
+                    <span>Контакты</span>
+                </li>
+                <li nz-menu-item class="dropdown-item dropdown-user">
+                    <nz-icon nzType="user" nzTheme="outline" />
+                    <span>Вход</span>
+                </li>
+            </ul>
+        </nz-dropdown-menu>
+    </ul>
+</nz-header>
