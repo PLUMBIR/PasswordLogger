@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PasswordLogBackend.Api.Common.Entities;
 using PasswordLogBackend.Api.Common.Interfaces;
-using PasswordLogBackend.Api.Common.Models;
+using PasswordLogBackend.Api.Common.Models.Dtos;
 
 namespace PasswordLogBackend.Api.Commands
 {

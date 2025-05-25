@@ -1,7 +1,7 @@
 ﻿using Mapster;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using PasswordLogBackend.Api.Common.Models;
+using PasswordLogBackend.Api.Common.Models.Dtos;
 
 namespace PasswordLogBackend.Api.Queries
 {
@@ -31,12 +31,19 @@ namespace PasswordLogBackend.Api.Queries
                 return new List<PasswordDto>();
             }
 
-            return await _dbContext.Users
+            var passwordDtos = await _dbContext.Users
                 .Include(u => u.Passwords)
                 .Where(o => o.Id == query.UserId)
                 .SelectMany(o => o.Passwords)
                 .ProjectToType<PasswordDto>()
                 .ToListAsync();
+
+            foreach (var passwordDto in passwordDtos)
+            {
+                passwordDto.SitePassword = PasswordEncryptExtension.Decrypt(passwordDto.SitePassword);
+            }
+
+            return passwordDtos;
         }
     }
 }

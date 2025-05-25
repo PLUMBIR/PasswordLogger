@@ -1,7 +1,8 @@
 import { Component, input, output } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
-import { PasswordCardModel } from "../../../models/PasswordCardModel";
+import { PasswordCardModel } from "../../../models/Cards/PasswordCardModel";
 import { NzIconModule } from "ng-zorro-antd/icon";
+import { BaseCardModel } from "../../../models/Cards/BaseCardModel";
 
 @Component({
   selector: 'password-card',
@@ -115,6 +116,5 @@ import { NzIconModule } from "ng-zorro-antd/icon";
 })
 
 export class PasswordCardComponent {
-  card = input.required<PasswordCardModel>();
-
+  card = input.required<BaseCardModel>();
 }

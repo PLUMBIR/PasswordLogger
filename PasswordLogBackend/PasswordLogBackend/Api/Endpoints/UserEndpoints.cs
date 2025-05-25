@@ -43,6 +43,26 @@ namespace PasswordLogBackend.Api.Endpoints
             {
                 return await mediator.Send(new GetAllPasswordsQuery(userId));
             });
+
+            app.MapGet("user/notes/{userId}", async (IMediator mediator, string userId) =>
+            {
+                return await mediator.Send(new GetAllNotesQuery(userId));
+            });
+
+            app.MapGet("user/addresses/{userId}", async (IMediator mediator, string userId) =>
+            {
+                return await mediator.Send(new GetAllAddressesQuery(userId));
+            });
+
+            app.MapGet("user/creditCards/{userId}", async (IMediator mediator, string userId) =>
+            {
+                return await mediator.Send(new GetAllCreditCardsQuery(userId));
+            });
+
+            app.MapGet("user/bankAccounts/{userId}", async (IMediator mediator, string userId) =>
+            {
+                return await mediator.Send(new GetAllBankAccountsQuery(userId));
+            });
         }
     }
 }

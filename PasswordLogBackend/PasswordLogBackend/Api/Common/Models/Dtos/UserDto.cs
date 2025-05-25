@@ -1,4 +1,4 @@
-﻿namespace PasswordLogBackend.Api.Common.Models
+﻿namespace PasswordLogBackend.Api.Common.Models.Dtos
 {
     public class UserDto
     {
