@@ -46,5 +46,15 @@ namespace PasswordLogBackend.Api.Common.Entities
         {
             Addresses.Add(address);
         }
+
+        public void AddCreditCardItem(PaymentCardEntity card)
+        {
+            CreditCards.Add(card);
+        }
+
+        public void AddBankAccountItem(BankAccountEntity bank)
+        {
+            BankAccounts.Add(bank);
+        }
     }
 }

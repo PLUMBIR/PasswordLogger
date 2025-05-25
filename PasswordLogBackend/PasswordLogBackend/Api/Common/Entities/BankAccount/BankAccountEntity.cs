@@ -19,5 +19,19 @@
         public string BranchPhone { get; set; }
 
         public string Notes { get; set; }
+
+        protected BankAccountEntity()
+        {
+        }
+
+        public BankAccountEntity(string name, string folder, string bankName, string accountNumber, int pin, string branchPhone)
+        {
+            Name = name;
+            Folder = folder;
+            BankName = bankName;
+            AccountNumber = accountNumber;
+            PIN = pin;
+            BranchPhone = branchPhone;
+        }
     }
 }

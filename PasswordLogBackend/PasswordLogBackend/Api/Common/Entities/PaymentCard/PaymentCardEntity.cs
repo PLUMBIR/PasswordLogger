@@ -1,4 +1,6 @@
-﻿namespace PasswordLogBackend.Api.Common.Entities.PaymentCard
+﻿using System;
+
+namespace PasswordLogBackend.Api.Common.Entities.PaymentCard
 {
     public class PaymentCardEntity : BaseEntity
     {
@@ -17,5 +19,27 @@
         public string ExpirationDate { get; set; }
 
         public string Notes { get; set; }
+
+        protected PaymentCardEntity()
+        {
+        }
+
+        public PaymentCardEntity(
+        string name,
+        string folder,
+        string nameOnCard,
+        long number,
+        int securityCode,
+        string startDate,
+        string expirationDate)
+        {
+            Name = name;
+            Folder = folder;
+            NameOnCard = nameOnCard;
+            Number = number;
+            SecurityCode = securityCode;
+            StartDate = startDate;
+            ExpirationDate = expirationDate;
+        }
     }
 }
