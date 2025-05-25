@@ -1,5 +1,5 @@
-import { AuthService } from './../services/auth.service';
-import { UserService } from './../services/user.service';
+import { AuthService } from '../services/auth.service';
+import { UserService } from '../services/user.service';
 import { CommonModule } from '@angular/common';
 import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -14,7 +14,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { PasswordCardComponent } from "./components/cards/passworCard.component";
 import { PasswordCardModel } from '../models/PasswordCardModel';
-import { HttpClient } from '@angular/common/http';
+import {NoteModel} from '../models/NoteModel';
 
 @Component({
   selector: 'app-main-page-content',
@@ -36,15 +36,27 @@ import { HttpClient } from '@angular/common/http';
 })
 
 export class MainPageContentComponent implements OnInit {
-  private allItemsModalComponentFactory = AllItemsModalComponent.factory();
-  isCollapsed = false;
-  passwordCards$ = signal<PasswordCardModel[]>([]);
-  
-
   userService = inject(UserService);
   authService = inject(AuthService);
+  private allItemsModalComponentFactory = AllItemsModalComponent.factory();
 
-  constructor(private readonly http: HttpClient) {
+  isCollapsed$ = signal<boolean>(false);
+
+  passwordCards$ = signal<PasswordCardModel[]>([]);
+  noteCards$ = signal<NoteModel[]>([]);
+
+  allCards$ = computed(() => [
+    ...this.passwordCards$().map((card: PasswordCardModel) => ({
+      ...card,
+      type: 'password',
+    })),
+    ...this.noteCards$().map((card: NoteModel) => ({
+      ...card,
+      type: 'note',
+    })),
+  ]);
+
+  constructor() {
     effect(() => {
       this.getPasswordCards();
     });
@@ -55,7 +67,7 @@ export class MainPageContentComponent implements OnInit {
   }
 
   toggleCollapsed(): void {
-    this.isCollapsed = !this.isCollapsed;
+    this.isCollapsed$.update((value) => !value);
   }
 
   showAllItemsModal() {
