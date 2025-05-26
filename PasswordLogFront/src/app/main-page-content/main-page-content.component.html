@@ -14,6 +14,7 @@
               nz-tooltip
               [nzTooltipTitle]="isCollapsed$() ? 'Все элементы' : ''"
               nzSelected
+              (click)="selectedType$.set(null)"
             >
               <nz-icon nzType="home" />
               <span>Все элементы</span>
@@ -23,6 +24,7 @@
               nz-menu-item
               nz-tooltip
               [nzTooltipTitle]="isCollapsed$() ? 'Пароли' : ''"
+              (click)="selectedType$.set('password')"
             >
               <nz-icon nzType="lock" />
               <span>Пароли</span>
@@ -31,6 +33,7 @@
               nz-menu-item
               nz-tooltip
               [nzTooltipTitle]="isCollapsed$() ? 'Заметки' : ''"
+              (click)="selectedType$.set('note')"
             >
               <nz-icon nzType="file" />
               <span>Заметки</span>
@@ -39,6 +42,7 @@
               nz-menu-item
               nz-tooltip
               [nzTooltipTitle]="isCollapsed$() ? 'Адреса' : ''"
+              (click)="selectedType$.set('address')"
             >
               <nz-icon nzType="global" />
               <span>Адреса</span>
@@ -48,6 +52,7 @@
               nz-menu-item
               nz-tooltip
               [nzTooltipTitle]="isCollapsed$() ? 'Данные карт' : ''"
+              (click)="selectedType$.set('creditCard')"
             >
               <nz-icon nzType="credit-card" />
               <span>Данные карт</span>
@@ -56,6 +61,7 @@
               nz-menu-item
               nz-tooltip
               [nzTooltipTitle]="isCollapsed$() ? 'Банковские аккаунты' : ''"
+              (click)="selectedType$.set('bankAccount')"
             >
               <nz-icon nzType="bank" />
               <span>Банковские аккаунты</span>
@@ -69,7 +75,7 @@
             </div>
             <div class="right-main-content-header-search">
                 <nz-input-group [nzSuffix]="suffixIconSearch">
-                    <input type="text" nz-input placeholder="Поиск"/>
+                    <input type="text" nz-input placeholder="Поиск..." autocomplete="off" [ngModel]="typehead$()" (ngModelChange)="typehead$.set($event)"/>
                   </nz-input-group>
                   <ng-template #suffixIconSearch>
                     <nz-icon nzType="search" />
@@ -89,26 +95,43 @@
         </div>
         <div class="title-category">
             <h3>Все элементы</h3>
-            <div class="sort-items">
+            <div class="sort-items" nz-dropdown nzTrigger="click" [nzDropdownMenu]="menu">
                 <div class="order-options">
                     Сортировка по:
-                    <span>а-я</span>
+                    <span>{{sortOption$()}}</span>
                     <nz-icon nzType="down" nzTheme="outline" />
                 </div>
+                <nz-dropdown-menu #menu="nzDropdownMenu">
+                  <ul nz-menu>
+                    <li nz-menu-item (click)="changeSortOption('имени a-z')">Имя a-z</li>
+                    <li nz-menu-item (click)="changeSortOption('имени z-a')">Имя z-a</li>
+                    <li nz-menu-item (click)="changeSortOption('папке a-z')">Папка a-z</li>
+                    <li nz-menu-item (click)="changeSortOption('папке z-a')">Папка z-a</li>
+                  </ul>
+                </nz-dropdown-menu>
             </div>
         </div>
         <div style="margin: 0 48px;">
             <nz-divider style="margin-bottom: 12px;"></nz-divider>
         </div>
         <div class="cards">
-            @for (itemCard of allCards$(); track itemCard.id) {
+            @for (itemCard of filteredCards$(); track itemCard.id) {
               @switch (itemCard.type) {
                 @case ('password') {
-                  <password-card [card]="itemCard"></password-card>
+                  <password-card [card]="itemCard" (onDeleteCard)="onDeleteCard($event)"></password-card>
                 }
-                <!-- @case ('note') {
-
-                } -->
+                @case ('note') {
+                  <other-card [card]="itemCard" (onDeleteCard)="onDeleteCard($event)"></other-card>
+                }
+                @case ('address') {
+                  <other-card [card]="itemCard" (onDeleteCard)="onDeleteCard($event)"></other-card>
+                }
+                @case ('creditCard') {
+                  <other-card [card]="itemCard" (onDeleteCard)="onDeleteCard($event)"></other-card>
+                }
+                @case ('bankAccount') {
+                  <other-card [card]="itemCard" (onDeleteCard)="onDeleteCard($event)"></other-card>
+                }
               }
             }
         </div>

@@ -1,8 +1,6 @@
-import { Component, input, output } from "@angular/core";
-import { RouterOutlet } from "@angular/router";
-import { PasswordCardModel } from "../../../models/Cards/PasswordCardModel";
+import { Component, input, output, signal } from "@angular/core";
 import { NzIconModule } from "ng-zorro-antd/icon";
-import { BaseCardModel } from "../../../models/Cards/BaseCardModel";
+import { BaseCardModel, CardType } from "../../../models/Cards/BaseCardModel";
 
 @Component({
   selector: 'password-card',
@@ -13,8 +11,9 @@ import { BaseCardModel } from "../../../models/Cards/BaseCardModel";
   template: `
     <div class="card">
         <div class="card-content">
-            <div class="item-icon">
-                <img src="twitch.png" alt="">
+            <div class="item-icon" [style.background-color]="itemColor()">
+                <!-- <img src="twitch.png" alt=""> -->
+                <nz-icon nzType="lock" nzTheme="outline" style="font-size: 32px; color: #fff"/>
                 <div class="overlay">
                     <button class="btn">Перейти</button>
                 </div>
@@ -24,8 +23,8 @@ import { BaseCardModel } from "../../../models/Cards/BaseCardModel";
                     <p>{{card().name}}</p>
                     <div class="item-info-buttons">
                         <nz-icon nzType="edit" nzTheme="outline" />
-                        <nz-icon nzType="usergroup-add" nzTheme="outline" />
-                        <nz-icon nzType="delete" nzTheme="outline" />
+                        <!-- <nz-icon nzType="usergroup-add" nzTheme="outline" /> -->
+                        <nz-icon nzType="delete" nzTheme="outline" (click)="onDeleteCard.emit({ id: card().id, type: 'password' })"/>
                     </div>
                 </div>
                 <p>{{card().username}}</p>
@@ -106,10 +105,20 @@ import { BaseCardModel } from "../../../models/Cards/BaseCardModel";
     .item-info-buttons {
       display: flex;
       gap: 10px;
+      cursor: pointer;
 
       nz-icon {
         font-size: 16px;
       }
+
+      nz-icon:hover {
+        color: rgba(209, 47, 46, 0.9);
+      }
+    }
+
+    .btn:hover {
+        background-color: rgba(209, 47, 46, 0.7);
+        color: #fff;
     }
     `,
   ]
@@ -117,4 +126,20 @@ import { BaseCardModel } from "../../../models/Cards/BaseCardModel";
 
 export class PasswordCardComponent {
   card = input.required<BaseCardModel>();
+
+  pastelColors = [
+    "#A7C7E7", 
+    "#F4A3BB", 
+    "#B8E986", 
+    "#FFD580", 
+    "#C3B1E1",  
+    "#A5D6A7", 
+    "#F5D76E",
+  ];
+
+  getRandomColor = () => this.pastelColors[Math.floor(Math.random() * this.pastelColors.length)];
+
+  itemColor = signal(this.getRandomColor());
+
+  onDeleteCard = output<{ id: string; type: CardType }>();
 }

@@ -56,5 +56,30 @@ namespace PasswordLogBackend.Api.Common.Entities
         {
             BankAccounts.Add(bank);
         }
+
+        public void DeletePasswordItem(PasswordEntity password)
+        {
+            Passwords.Remove(password);
+        }
+
+        public void DeleteNoteItem(NoteEntity note)
+        {
+            Notes.Remove(note);
+        }
+
+        public void DeleteAddressItem(AddressEntity address)
+        {
+            Addresses.Remove(address);
+        }
+
+        public void DeleteCreditCardItem(PaymentCardEntity card)
+        {
+            CreditCards.Remove(card);
+        }
+
+        public void DeleteBankAccountItem(BankAccountEntity bank)
+        {
+            BankAccounts.Remove(bank);
+        }
     }
 }

@@ -1,3 +1,10 @@
+export type CardType = 
+'password'
+| 'note'
+| 'address'
+| 'creditCard'
+| 'bankAccount';
+
 export interface BaseCardModel {
     id: string
     name: string;
@@ -26,6 +33,6 @@ export interface BaseCardModel {
     startDate?: string;
     expirationDate?: string;
     text?: string;
-    type: 'password' | 'note' | 'address' | 'creditCard' | 'bankAccount';
+    type: CardType;
     notes?: string;
 }

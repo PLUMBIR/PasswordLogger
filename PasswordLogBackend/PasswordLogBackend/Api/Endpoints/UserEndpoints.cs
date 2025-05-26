@@ -63,6 +63,14 @@ namespace PasswordLogBackend.Api.Endpoints
             {
                 return await mediator.Send(new GetAllBankAccountsQuery(userId));
             });
+
+            app.MapDelete("user/card", async (HttpContext context, IMediator mediator) =>
+            {
+                var command = await context.Request.ReadFromJsonAsync<DeleteCardModel>();
+
+                return await mediator.Send(new DeleteCardByIdComand(command.UserId, command.CardId, command.CardType));
+            });
+
         }
     }
 }

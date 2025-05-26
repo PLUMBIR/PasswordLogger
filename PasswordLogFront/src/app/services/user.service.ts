@@ -11,6 +11,7 @@ import { NoteCardModel } from '../models/Cards/NoteCardModel';
 import { AddressCardModel } from '../models/Cards/AddressCardModel';
 import { PaymentCardModel } from '../models/Cards/PaymentCardModel';
 import { BankAccountCardModel } from '../models/Cards/BankAccountCardModel';
+import { DeleteCardModel } from '../models/DeleteCardModel';
 
 @Injectable({
   providedIn: 'root',
@@ -56,5 +57,11 @@ export class UserService {
 
     getBankAccountsCards(userId: string) {
       return this.http.get<BankAccountCardModel[]>(`${API_URL}/user/bankAccounts/${userId}`);
+    }
+
+    deleteCardById(cardModel: DeleteCardModel) {
+      return this.http.delete(`${API_URL}/user/card`, {
+        body: cardModel,
+      });
     }
 }
