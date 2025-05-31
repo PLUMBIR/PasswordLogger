@@ -11,7 +11,7 @@ export interface BaseCardModel {
     folder?: string;
     url?: string;
     username?: string;
-    password?: string;
+    sitePassword?: string;
     title?: string;
     firstName?: string;
     middleName?: string;
@@ -23,9 +23,9 @@ export interface BaseCardModel {
     mobilePhone?: string;
     bankName?: string; 
     accountNumber?: string;
-    SWIFTCode?: string;
-    IBANNumber?: string;
-    PIN?: number; 
+    swiftCode?: string;
+    ibanNumber?: string;
+    pin?: number; 
     branchPhone?: string;
     nameOnCard?: string;
     number?: number;

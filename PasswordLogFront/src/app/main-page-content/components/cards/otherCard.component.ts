@@ -34,7 +34,7 @@ import { BaseCardModel, CardType } from "../../../models/Cards/BaseCardModel";
                     <div class="item-info-name">
                         <p>{{card().name}}</p>
                         <div class="item-info-buttons">
-                            <nz-icon nzType="edit" nzTheme="outline" />
+                            <nz-icon nzType="edit" nzTheme="outline" (click)="onEditCard.emit({ id: card().id, type: 'note' })"/>
                             <!-- <nz-icon nzType="usergroup-add" nzTheme="outline" /> -->
                             <nz-icon nzType="delete" nzTheme="outline" (click)="onDeleteCard.emit({ id: card().id, type: 'note' })"/>
                         </div>
@@ -44,7 +44,7 @@ import { BaseCardModel, CardType } from "../../../models/Cards/BaseCardModel";
                     <div class="item-info-name">
                         <p>{{card().firstName}} {{card().lastName}}</p>
                         <div class="item-info-buttons">
-                            <nz-icon nzType="edit" nzTheme="outline" />
+                            <nz-icon nzType="edit" nzTheme="outline" (click)="onEditCard.emit({ id: card().id, type: 'address' })"/>
                             <!-- <nz-icon nzType="usergroup-add" nzTheme="outline" /> -->
                             <nz-icon nzType="delete" nzTheme="outline" (click)="onDeleteCard.emit({ id: card().id, type: 'address' })"/>
                         </div>
@@ -55,7 +55,7 @@ import { BaseCardModel, CardType } from "../../../models/Cards/BaseCardModel";
                     <div class="item-info-name">
                         <p>{{card().name}}</p>
                         <div class="item-info-buttons">
-                            <nz-icon nzType="edit" nzTheme="outline" />
+                            <nz-icon nzType="edit" nzTheme="outline" (click)="onEditCard.emit({ id: card().id, type: 'creditCard' })"/>
                             <!-- <nz-icon nzType="usergroup-add" nzTheme="outline" /> -->
                             <nz-icon nzType="delete" nzTheme="outline" (click)="onDeleteCard.emit({ id: card().id, type: 'creditCard' })"/>
                         </div>
@@ -66,7 +66,7 @@ import { BaseCardModel, CardType } from "../../../models/Cards/BaseCardModel";
                     <div class="item-info-name">
                         <p>{{card().bankName}}</p>
                         <div class="item-info-buttons">
-                            <nz-icon nzType="edit" nzTheme="outline" />
+                            <nz-icon nzType="edit" nzTheme="outline" (click)="onEditCard.emit({ id: card().id, type: 'bankAccount' })"/>
                             <!-- <nz-icon nzType="usergroup-add" nzTheme="outline" /> -->
                             <nz-icon nzType="delete" nzTheme="outline" (click)="onDeleteCard.emit({ id: card().id, type: 'bankAccount' })"/>
                         </div>
@@ -150,9 +150,14 @@ import { BaseCardModel, CardType } from "../../../models/Cards/BaseCardModel";
     .item-info-buttons {
       display: flex;
       gap: 10px;
+      cursor: pointer;
 
       nz-icon {
         font-size: 16px;
+      }
+
+      nz-icon:hover {
+        color: rgba(209, 47, 46, 0.9);
       }
     }
 
@@ -181,6 +186,6 @@ export class OtherCardComponent {
 
   itemColor = signal(this.getRandomColor());
 
-
+  onEditCard = output<{ id: string; type: CardType }>();
   onDeleteCard = output<{ id: string; type: CardType }>();
 }

@@ -1,6 +1,6 @@
 <div class="main-page">
     <div class="left-menu" [ngClass]="{'collapsed': isCollapsed$()}">
-          <ul nz-menu nzMode="inline" [nzInlineCollapsed]="isCollapsed$()">
+          <ul nz-menu nzMode="inline" [nzInlineCollapsed]="isCollapsed$()" style="height: 100%;">
             <li
               nz-menu-item
               (click)="toggleCollapsed()"
@@ -67,6 +67,12 @@
               <span>Банковские аккаунты</span>
             </li>
           </ul>
+          <button class="password-generator-btn" (click)="showPasswordGenerator()">
+            <nz-icon nzType="control" nzTheme="outline" />
+            @if(!isCollapsed$()) {
+              Генератор пароля
+            }
+          </button>
     </div>
     <div class="right-main-content">
         <div class="right-main-content-header">
@@ -86,7 +92,7 @@
                     <img src="user-avatar.png" alt="">
                 </div>
                 <div class="user-email">
-                    dyrachyoprime&#64;gmail.com
+                    {{userEmail$()}}
                 </div>
                 <div class="user-icon">
                     <nz-icon nzType="down" nzTheme="outline" />
@@ -118,19 +124,19 @@
             @for (itemCard of filteredCards$(); track itemCard.id) {
               @switch (itemCard.type) {
                 @case ('password') {
-                  <password-card [card]="itemCard" (onDeleteCard)="onDeleteCard($event)"></password-card>
+                  <password-card [card]="itemCard" (onDeleteCard)="onDeleteCard($event)" (onEditCard)="onEditCard($event)"></password-card>
                 }
                 @case ('note') {
-                  <other-card [card]="itemCard" (onDeleteCard)="onDeleteCard($event)"></other-card>
+                  <other-card [card]="itemCard" (onDeleteCard)="onDeleteCard($event)" (onEditCard)="onEditCard($event)"></other-card>
                 }
                 @case ('address') {
-                  <other-card [card]="itemCard" (onDeleteCard)="onDeleteCard($event)"></other-card>
+                  <other-card [card]="itemCard" (onDeleteCard)="onDeleteCard($event)" (onEditCard)="onEditCard($event)"></other-card>
                 }
                 @case ('creditCard') {
-                  <other-card [card]="itemCard" (onDeleteCard)="onDeleteCard($event)"></other-card>
+                  <other-card [card]="itemCard" (onDeleteCard)="onDeleteCard($event)" (onEditCard)="onEditCard($event)"></other-card>
                 }
                 @case ('bankAccount') {
-                  <other-card [card]="itemCard" (onDeleteCard)="onDeleteCard($event)"></other-card>
+                  <other-card [card]="itemCard" (onDeleteCard)="onDeleteCard($event)" (onEditCard)="onEditCard($event)"></other-card>
                 }
               }
             }

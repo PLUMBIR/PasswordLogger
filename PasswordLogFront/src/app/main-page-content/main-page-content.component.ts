@@ -22,6 +22,13 @@ import { BankAccountCardModel } from '../models/Cards/BankAccountCardModel';
 import { OtherCardComponent } from "./components/cards/otherCard.component";
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { PasswordModalComponent } from './components/password.component';
+import { NoteModalComponent } from './components/note.component';
+import { AddressModalComponent } from './components/address.component';
+import { CreditCardModalComponent } from './components/card.component';
+import { BankAccountModalComponent } from './components/bank.component';
+import { AllUserDataModel } from '../models/Cards/AllUserDataModel';
+import { PasswordGeneratorModalComponent } from './components/password-generator.component';
 
 @Component({
   selector: 'app-main-page-content',
@@ -46,51 +53,75 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 })
 
 export class MainPageContentComponent implements OnInit {
+  private passwordModalFactory = PasswordModalComponent.factory();
+  private noteModalFactory = NoteModalComponent.factory();
+  private addressModalFactory = AddressModalComponent.factory();
+  private creditCardModalFactory = CreditCardModalComponent.factory();
+  private bankAccountModalFactory = BankAccountModalComponent.factory();
+  private allItemsModalFactory = AllItemsModalComponent.factory();
+  private passwordGeneratorFactory = PasswordGeneratorModalComponent.factory();
+
   userService = inject(UserService);
   authService = inject(AuthService);
-  private allItemsModalComponentFactory = AllItemsModalComponent.factory();
-
+  
+  userEmail$ = signal<string>(this.authService.user$()?.email!);
   isCollapsed$ = signal<boolean>(false);
-
-  passwordCards$ = signal<PasswordCardModel[]>([]);
-  noteCards$ = signal<NoteCardModel[]>([]);
-  addressesCards$ = signal<AddressCardModel[]>([]);
-  creditCards$ = signal<PaymentCardModel[]>([]);
-  bankAccountsCards$ = signal<BankAccountCardModel[]>([]);
 
   typehead$ = signal<string>('');
   selectedType$ = signal<string | null>(null);
   sortOption$ = signal<string>('имени a-z');
 
-  allCards$ : Signal<BaseCardModel[]> = computed(() => [
-    ...this.passwordCards$().map((card: PasswordCardModel) => ({
+  allUserData$ = signal<AllUserDataModel>({
+    passwords: [],
+    notes: [],
+    addresses: [],
+    creditCards: [],
+    bankAccounts: []
+  });
+
+  allCardsViewModel$ : Signal<BaseCardModel[]> = computed(() => {
+    const data = this.allUserData$();
+
+    const passwords = data.passwords.map((card) => ({
       ...card,
       type: 'password' as const,
-    })),
-    ...this.noteCards$().map((card: NoteCardModel) => ({
+    }));
+
+    const notes = data.notes.map((card) => ({
       ...card,
       type: 'note' as const,
-    })),
-    ...this.addressesCards$().map((card: AddressCardModel) => ({
+    }));
+
+    const addresses = data.addresses.map((card) => ({
       ...card,
       type: 'address' as const,
-    })),
-    ...this.creditCards$().map((card: PaymentCardModel) => ({
+    }));
+
+    const creditCards = data.creditCards.map((card) => ({
       ...card,
       type: 'creditCard' as const,
-    })),
-    ...this.bankAccountsCards$().map((card: BankAccountCardModel) => ({
+    }));
+
+    const bankAccounts = data.bankAccounts.map((card) => ({
       ...card,
       type: 'bankAccount' as const,
-    }))
-  ]);
+    }));
+
+    return [
+      ...passwords,
+      ...notes,
+      ...addresses,
+      ...creditCards,
+      ...bankAccounts
+    ];
+  });
 
   filteredCards$ = computed(() => {
     const query = this.typehead$().toLowerCase().trim();
     const type = this.selectedType$();
     const sortOption = this.sortOption$();
 
-    let cards = this.allCards$()
+    let cards = this.allCardsViewModel$()
       .filter((card) => (!type || card.type === type))
       .filter((card) => (!query || card.name.toLowerCase().includes(query))); 
 
@@ -112,17 +143,10 @@ export class MainPageContentComponent implements OnInit {
   } 
 
   constructor(private message: NzMessageService) {
-    effect(() => {
-      // this.getPasswordCards();
-    });
   }
 
   ngOnInit(): void {
-    this.getPasswordCards();
-    this.getNotesCards();
-    this.getAddressesCards();
-    this.getCreditCards();
-    this.getBankAccountsCards();
+    this.getAllUserData();
   }
 
   toggleCollapsed(): void {
@@ -130,41 +154,36 @@ export class MainPageContentComponent implements OnInit {
   }
 
   showAllItemsModal() {
-    this.allItemsModalComponentFactory()
+    switch (this.selectedType$()) {
+        case 'password':
+            this.passwordModalFactory();
+            break;
+        case 'note':
+            this.noteModalFactory();
+            break;
+        case 'address':
+            this.addressModalFactory();
+            break;
+        case 'creditCard':
+            this.creditCardModalFactory();
+            break;
+        case 'bankAccount':
+            this.bankAccountModalFactory();
+            break;
+        default:
+            this.allItemsModalFactory();
+            break;
+    }
   }
 
-  getPasswordCards() {
-    this.userService.getPasswordCards(this.authService.user$()?.id!)
-      .subscribe((cards) => {
-        this.passwordCards$.set(cards);
-      });
+  showPasswordGenerator() {
+    this.passwordGeneratorFactory();
   }
 
-  getNotesCards() {
-    this.userService.getNotesCards(this.authService.user$()?.id!)
-      .subscribe((cards) => {
-        this.noteCards$.set(cards);
-      });
-  }
-
-  getAddressesCards() {
-    this.userService.getAddressesCards(this.authService.user$()?.id!)
-      .subscribe((cards) => {
-        this.addressesCards$.set(cards);
-      });
-  }
-
-  getCreditCards() {
-    this.userService.getCreditCards(this.authService.user$()?.id!)
-      .subscribe((cards) => {
-        this.creditCards$.set(cards);
-      });
-  }
-
-  getBankAccountsCards() {
-    this.userService.getBankAccountsCards(this.authService.user$()?.id!)
-      .subscribe((cards) => {
-        this.bankAccountsCards$.set(cards);
+  getAllUserData() {
+    this.userService.getAllUserData(this.authService.user$()?.id!)
+      .subscribe((items) => {
+        this.allUserData$.set(items);
       });
   }
 
@@ -179,17 +198,34 @@ export class MainPageContentComponent implements OnInit {
       .subscribe({
         next: () => {
           this.message.success('Удалено.');
-          this.refreshCards();
+          this.getAllUserData();
         },
-        error: () => this.message.success('Ошибка при удалении.')
-      });
-    }
+        error: () => this.message.error('Ошибка при удалении.')
+    });
+  }
 
-  refreshCards() {
-    this.getPasswordCards();
-    this.getNotesCards();
-    this.getAddressesCards();
-    this.getCreditCards();
-    this.getBankAccountsCards();
+  onEditCard($event: any) {
+    const allCards = this.allCardsViewModel$();
+
+    const card = allCards.find((o) => o.id === $event.id);
+
+    switch (card!.type) {
+      case 'password':
+         this.passwordModalFactory(card as PasswordCardModel);
+        break;
+      case 'note':
+          this.noteModalFactory(card as NoteCardModel);
+        break;
+      case 'address':
+          this.addressModalFactory(card as AddressCardModel);
+        break;
+      case 'creditCard':
+          this.creditCardModalFactory(card as PaymentCardModel);
+        break;
+      case 'bankAccount':
+          this.bankAccountModalFactory(card as BankAccountCardModel);
+        break;
+    } 
   }
 }
+

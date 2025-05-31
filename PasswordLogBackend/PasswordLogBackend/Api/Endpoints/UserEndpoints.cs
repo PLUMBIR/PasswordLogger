@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using PasswordLogBackend.Api.Commands;
+using PasswordLogBackend.Api.Common.Extensions;
 using PasswordLogBackend.Api.Common.Models;
 using PasswordLogBackend.Api.Queries;
 
@@ -39,6 +40,13 @@ namespace PasswordLogBackend.Api.Endpoints
                 return response;
             });
 
+            app.MapPost("user/passwordgenerator", (PasswordGeneratorModel model) =>
+            {
+                var password = PasswordGeneratorExtension.GeneratePassword(model);
+                return Results.Ok(password);
+            });
+
+
             app.MapGet("user/passwords/{userId}", async (IMediator mediator, string userId) =>
             {
                 return await mediator.Send(new GetAllPasswordsQuery(userId));
@@ -62,6 +70,11 @@ namespace PasswordLogBackend.Api.Endpoints
             app.MapGet("user/bankAccounts/{userId}", async (IMediator mediator, string userId) =>
             {
                 return await mediator.Send(new GetAllBankAccountsQuery(userId));
+            });
+
+            app.MapGet("user/fulldata/{userId}", async (IMediator mediator, string userId) =>
+            {
+                return await mediator.Send(new GetAllUserDataQuery(userId));
             });
 
             app.MapDelete("user/card", async (HttpContext context, IMediator mediator) =>

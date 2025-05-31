@@ -22,7 +22,7 @@ import { BaseCardModel, CardType } from "../../../models/Cards/BaseCardModel";
                 <div class="item-info-name">
                     <p>{{card().name}}</p>
                     <div class="item-info-buttons">
-                        <nz-icon nzType="edit" nzTheme="outline" />
+                        <nz-icon nzType="edit" nzTheme="outline" (click)="onEditCard.emit({ id: card().id, type: 'password' })"/>
                         <!-- <nz-icon nzType="usergroup-add" nzTheme="outline" /> -->
                         <nz-icon nzType="delete" nzTheme="outline" (click)="onDeleteCard.emit({ id: card().id, type: 'password' })"/>
                     </div>
@@ -141,5 +141,6 @@ export class PasswordCardComponent {
 
   itemColor = signal(this.getRandomColor());
 
+  onEditCard = output<{ id: string; type: CardType }>();
   onDeleteCard = output<{ id: string; type: CardType }>();
 }

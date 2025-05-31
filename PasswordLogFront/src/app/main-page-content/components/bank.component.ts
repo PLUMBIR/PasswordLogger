@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject } from "@angular/core";
+import { Component, ChangeDetectionStrategy, inject, signal } from "@angular/core";
 import { FormControl, ReactiveFormsModule, NonNullableFormBuilder, FormGroup, Validators } from "@angular/forms";
 import { NzButtonModule } from "ng-zorro-antd/button";
 import { NzDividerModule } from "ng-zorro-antd/divider";
@@ -9,10 +9,11 @@ import { NzInputModule } from "ng-zorro-antd/input";
 import { NzLayoutModule } from "ng-zorro-antd/layout";
 import { NzMenuModule } from "ng-zorro-antd/menu";
 import { NzMessageService } from "ng-zorro-antd/message";
-import { NzModalModule, NzModalRef, NzModalService } from "ng-zorro-antd/modal";
+import { NZ_MODAL_DATA, NzModalModule, NzModalRef, NzModalService } from "ng-zorro-antd/modal";
 import { AuthService } from "../../services/auth.service";
 import { UserService } from "../../services/user.service";
 import { AllItemsModalComponent } from "./all-items.component";
+import { BankAccountCardModel } from "../../models/Cards/BankAccountCardModel";
 
 export interface BankFormGroup { 
   name: FormControl<string>;          
@@ -94,26 +95,71 @@ export interface BankFormGroup {
                                 <span>SWIFT-код:</span>
                                 <nz-form-item>
                                     <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Пожалуйста, введите SWIFT-код">
-                                        <input nz-input formControlName="SWIFTCode" />
+                                        <nz-input-group [nzSuffix]="swiftSuffix">
+                                            <input
+                                                [type]="swiftVisible$() ? 'text' : 'password'"
+                                                nz-input
+                                                formControlName="SWIFTCode"
+                                            />
+                                        </nz-input-group>
                                     </nz-form-control>
                                 </nz-form-item>
                             </div>
+
                             <div class="item">
                                 <span>IBAN:</span>
                                 <nz-form-item>
                                     <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Пожалуйста, введите IBAN">
-                                        <input nz-input formControlName="IBANNumber" />
+                                        <nz-input-group [nzSuffix]="ibanSuffix">
+                                            <input
+                                                [type]="ibanVisible$() ? 'text' : 'password'"
+                                                nz-input
+                                                formControlName="IBANNumber"
+                                            />
+                                        </nz-input-group>
                                     </nz-form-control>
                                 </nz-form-item>
                             </div>
+
                             <div class="item">
                                 <span>PIN:</span>
                                 <nz-form-item>
                                     <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Пожалуйста, введите PIN (неотрицательное число)">
-                                        <input nz-input type="number" formControlName="PIN" />
+                                        <nz-input-group [nzSuffix]="pinSuffix">
+                                            <input
+                                                [type]="pinVisible$() ? 'text' : 'password'"
+                                                nz-input
+                                                formControlName="PIN"
+                                            />
+                                        </nz-input-group>
                                     </nz-form-control>
                                 </nz-form-item>
                             </div>
+
+                            <ng-template #swiftSuffix>
+                                <nz-icon
+                                    class="ant-input-password-icon"
+                                    [nzType]="swiftVisible$() ? 'eye-invisible' : 'eye'"
+                                    (click)="swiftVisible$.set(!swiftVisible$())"
+                                />
+                            </ng-template>
+
+                            <ng-template #ibanSuffix>
+                                <nz-icon
+                                    class="ant-input-password-icon"
+                                    [nzType]="ibanVisible$() ? 'eye-invisible' : 'eye'"
+                                    (click)="ibanVisible$.set(!ibanVisible$())"
+                                />
+                            </ng-template>
+
+                            <ng-template #pinSuffix>
+                                <nz-icon
+                                    class="ant-input-password-icon"
+                                    [nzType]="pinVisible$() ? 'eye-invisible' : 'eye'"
+                                    (click)="pinVisible$.set(!pinVisible$())"
+                                />
+                            </ng-template>
+
                             <div class="item">
                                 <span>Телефон отделения:</span>
                                 <nz-form-item>
@@ -316,6 +362,13 @@ export class BankAccountModalComponent {
     private fb = inject(NonNullableFormBuilder); 
     private nzmodalref = inject(NzModalRef);
     private allItemsModalFactory = AllItemsModalComponent.factory();
+    private nzModalData = inject<{ card: BankAccountCardModel }>(NZ_MODAL_DATA);
+
+    swiftVisible$ = signal<boolean>(false);
+    ibanVisible$ = signal<boolean>(false);
+    pinVisible$ = signal<boolean>(false);
+
+    private card$ = signal<BankAccountCardModel>(this.nzModalData.card);
 
     constructor(
         private readonly userService: UserService,
@@ -326,7 +379,7 @@ export class BankAccountModalComponent {
     static factory() {
         const nzModalService = inject(NzModalService);
     
-        return () => {
+        return (card? : BankAccountCardModel) => {
             nzModalService.create({
             nzContent: BankAccountModalComponent,
             nzCentered: true,
@@ -335,7 +388,10 @@ export class BankAccountModalComponent {
             nzBodyStyle: {
                 'padding': '0'
             },
-            nzFooter: null
+            nzFooter: null,
+            nzData: {
+                card,
+            },
             });
         };
     }
@@ -351,6 +407,22 @@ export class BankAccountModalComponent {
         branchPhone: this.fb.control<string>('', [Validators.required]),
         notes: this.fb.control<string>('')
     });
+
+    ngOnInit(): void {
+        if (this.card$()) {
+            this.form.reset({
+                name: this.card$().name,
+                folder: this.card$().folder,
+                bankName: this.card$().bankName,
+                accountNumber: this.card$().accountNumber,
+                SWIFTCode: this.card$().swiftCode,
+                IBANNumber: this.card$().ibanNumber,
+                PIN: this.card$().pin,
+                branchPhone: this.card$().branchPhone,
+                notes: this.card$().notes,
+            });
+        }
+    }
 
     get formValues() {
         return this.form.value;

@@ -1,5 +1,5 @@
 import { UserService } from './../../services/user.service';
-import { Component, ChangeDetectionStrategy, inject } from "@angular/core";
+import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from "@angular/core";
 import { FormControl, FormGroup, NonNullableFormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { NzButtonModule } from "ng-zorro-antd/button";
 import { NzDividerModule } from "ng-zorro-antd/divider";
@@ -9,10 +9,11 @@ import { NzIconModule } from "ng-zorro-antd/icon";
 import { NzInputModule } from "ng-zorro-antd/input";
 import { NzLayoutModule } from "ng-zorro-antd/layout";
 import { NzMenuModule } from "ng-zorro-antd/menu";
-import { NzModalModule, NzModalRef, NzModalService } from "ng-zorro-antd/modal";
+import { NZ_MODAL_DATA, NzModalModule, NzModalRef, NzModalService } from "ng-zorro-antd/modal";
 import { AuthService } from '../../services/auth.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { AllItemsModalComponent } from './all-items.component';
+import { NoteCardModel } from '../../models/Cards/NoteCardModel';
 
 export interface NoteFormGroup {
   name: FormControl<string>;
@@ -217,10 +218,14 @@ export interface NoteFormGroup {
    changeDetection: ChangeDetectionStrategy.OnPush,
  })
 
-export class NoteModalComponent {
+export class NoteModalComponent implements OnInit{
     private fb = inject(NonNullableFormBuilder); 
     private nzmodalref = inject(NzModalRef);
     private allItemsModalFactory = AllItemsModalComponent.factory();
+
+    private nzModalData = inject<{ card: NoteCardModel }>(NZ_MODAL_DATA);
+
+    private card$ = signal<NoteCardModel>(this.nzModalData.card);
 
     constructor(
         private readonly userService: UserService,
@@ -228,28 +233,21 @@ export class NoteModalComponent {
         private message: NzMessageService
     ) {}
 
-    static factory() {
-        const nzModalService = inject(NzModalService);
-    
-        return () => {
-            nzModalService.create({
-            nzContent: NoteModalComponent,
-            nzCentered: true,
-            nzMaskClosable: true,
-            nzWidth: 1000,
-            nzBodyStyle: {
-                'padding': '0'
-            },
-            nzFooter: null
-            });
-        };
-    }
-
     form = new FormGroup<NoteFormGroup>({
         name: this.fb.control<string>('', [Validators.required]),
         folder: this.fb.control<string>('', [Validators.required]),
         text: this.fb.control<string>('', [Validators.required])
     });
+
+    ngOnInit(): void {
+        if (this.card$()) {
+            this.form.reset({
+                name: this.card$().name,
+                folder: this.card$().folder,
+                text: this.card$().text
+            });
+        }
+    }
 
     get formValues() {
         return this.form.value;
@@ -284,5 +282,25 @@ export class NoteModalComponent {
                 }
             );
         }
+    }
+
+    static factory() {
+        const nzModalService = inject(NzModalService);
+    
+        return (card?: NoteCardModel) => {
+            nzModalService.create({
+            nzContent: NoteModalComponent,
+            nzCentered: true,
+            nzMaskClosable: true,
+            nzWidth: 1000,
+            nzBodyStyle: {
+                'padding': '0'
+            },
+            nzFooter: null,
+            nzData: {
+                card,
+            },
+            });
+        };
     }
 }

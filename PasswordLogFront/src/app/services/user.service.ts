@@ -5,13 +5,10 @@ import { PasswordModel } from "../models/PasswordModel";
 import { API_URL } from "../constants/URL";
 import { NoteModel } from "../models/NoteModel";
 import { AddressModel } from "../models/AddressModel";
-import { PasswordCardModel } from "../models/Cards/PasswordCardModel";
 import { CreditCardModel } from "../models/CreditCardModel";
-import { NoteCardModel } from '../models/Cards/NoteCardModel';
-import { AddressCardModel } from '../models/Cards/AddressCardModel';
-import { PaymentCardModel } from '../models/Cards/PaymentCardModel';
-import { BankAccountCardModel } from '../models/Cards/BankAccountCardModel';
 import { DeleteCardModel } from '../models/DeleteCardModel';
+import { AllUserDataModel } from '../models/Cards/AllUserDataModel';
+import { PasswordGenerateModel } from '../models/passwordGenerateModel';
 
 @Injectable({
   providedIn: 'root',
@@ -39,24 +36,12 @@ export class UserService {
       return this.http.post(`${API_URL}/user/bankAccount`, bankAccountModel);
     }
 
-    getPasswordCards(userId: string) {
-      return this.http.get<PasswordCardModel[]>(`${API_URL}/user/passwords/${userId}`);
+    generatePassword(passwordGenerateModel: PasswordGenerateModel) {
+      return this.http.post(`${API_URL}/user/passwordgenerator`, passwordGenerateModel);
     }
 
-    getNotesCards(userId: string) {
-      return this.http.get<NoteCardModel[]>(`${API_URL}/user/notes/${userId}`);
-    }
-
-    getAddressesCards(userId: string) {
-      return this.http.get<AddressCardModel[]>(`${API_URL}/user/addresses/${userId}`);
-    }
-
-    getCreditCards(userId: string) {
-      return this.http.get<PaymentCardModel[]>(`${API_URL}/user/creditCards/${userId}`);
-    }
-
-    getBankAccountsCards(userId: string) {
-      return this.http.get<BankAccountCardModel[]>(`${API_URL}/user/bankAccounts/${userId}`);
+    getAllUserData(userId: string) {
+      return this.http.get<AllUserDataModel>(`${API_URL}/user/fulldata/${userId}`);
     }
 
     deleteCardById(cardModel: DeleteCardModel) {

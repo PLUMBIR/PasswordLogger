@@ -1,5 +1,6 @@
+import { PasswordCardModel } from './../../models/Cards/PasswordCardModel';
 import { UserService } from './../../services/user.service';
-import { Component, ChangeDetectionStrategy, inject } from "@angular/core";
+import { Component, ChangeDetectionStrategy, inject, Input, OnInit, signal } from "@angular/core";
 import { FormControl, FormGroup, NonNullableFormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { NzButtonModule } from "ng-zorro-antd/button";
 import { NzDividerModule } from "ng-zorro-antd/divider";
@@ -9,13 +10,13 @@ import { NzIconModule } from "ng-zorro-antd/icon";
 import { NzInputModule } from "ng-zorro-antd/input";
 import { NzLayoutModule } from "ng-zorro-antd/layout";
 import { NzMenuModule } from "ng-zorro-antd/menu";
-import { NzModalModule, NzModalRef, NzModalService } from "ng-zorro-antd/modal";
+import { NZ_MODAL_DATA, NzModalModule, NzModalRef, NzModalService } from "ng-zorro-antd/modal";
 import { AuthService } from '../../services/auth.service';
 import { AllItemsModalComponent } from './all-items.component';
 import { NzMessageService } from 'ng-zorro-antd/message';
 
 export interface PasswordFormGroup {
-  URL: FormControl<string>;
+  url: FormControl<string>;
   name: FormControl<string>;
   folder: FormControl<string>;
   username: FormControl<string>;
@@ -54,7 +55,7 @@ export interface PasswordFormGroup {
                     <span>URL:</span>
                     <nz-form-item>
                         <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Пожалуйста, напишите URL">
-                            <input nz-input id="URL" formControlName="URL" placeholder="URL" />
+                            <input nz-input id="URL" formControlName="url" placeholder="URL" />
                         </nz-form-control>
                     </nz-form-item>
                     <div class="inputs">
@@ -86,8 +87,25 @@ export interface PasswordFormGroup {
                             <span>Пароль:</span>
                             <nz-form-item>
                                 <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Пожалуйста, введите пароль">
-                                    <input nz-input type="password" id="password" formControlName="password" placeholder="Пароль" />
+                                    <nz-input-group [nzSuffix]="suffixTemplate">
+                                        <input
+                                            [type]="passwordVisible$() ? 'text' : 'password'"
+                                            nz-input
+                                            id="password"
+                                            formControlName="password"
+                                            placeholder="Пароль"
+                                        />
+                                    </nz-input-group>
                                 </nz-form-control>
+
+                                <ng-template #suffixTemplate>
+                                    <nz-icon
+                                        class="ant-input-password-icon"
+                                        [nzType]="passwordVisible$() ? 'eye-invisible' : 'eye'"
+                                        (click)="passwordVisible$.set(!passwordVisible$())"
+                                    />
+                                </ng-template>
+
                             </nz-form-item>
                         </div>
                     </div>
@@ -226,10 +244,14 @@ export interface PasswordFormGroup {
    changeDetection: ChangeDetectionStrategy.OnPush,
  })
 
-export class PasswordModalComponent {
+export class PasswordModalComponent implements OnInit {
     private fb = inject(NonNullableFormBuilder); 
     private nzmodalref = inject(NzModalRef);
     private allItemsModalFactory = AllItemsModalComponent.factory();
+    private nzModalData = inject<{ card: PasswordCardModel }>(NZ_MODAL_DATA);
+    passwordVisible$ = signal<boolean>(false);
+
+    private card$ = signal<PasswordCardModel>(this.nzModalData.card);
 
     constructor(
         private readonly userService: UserService,
@@ -237,31 +259,27 @@ export class PasswordModalComponent {
         private message: NzMessageService
     ) {}
 
-    static factory() {
-        const nzModalService = inject(NzModalService);
-    
-        return () => {
-            nzModalService.create({
-            nzContent: PasswordModalComponent,
-            nzCentered: true,
-            nzMaskClosable: true,
-            nzWidth: 800,
-            nzBodyStyle: {
-                'padding': '0'
-            },
-            nzFooter: null
-            });
-        };
-    }
-
     form = new FormGroup<PasswordFormGroup>({
-        URL: this.fb.control<string>('', [Validators.required]),
+        url: this.fb.control<string>('', [Validators.required]),
         name: this.fb.control<string>('', [Validators.required]),
         folder: this.fb.control<string>('', [Validators.required]),
         username: this.fb.control<string>('', [Validators.required]),
         password: this.fb.control<string>('', [Validators.required]),
         notes: this.fb.control<string>('', [Validators.maxLength(200)]),
     });
+
+    ngOnInit(): void {
+        if (this.card$()) {
+            this.form.reset({
+                url: this.card$().url,
+                name: this.card$().name,
+                folder: this.card$().folder,
+                username: this.card$().username,
+                password: this.card$().sitePassword,
+                notes: this.card$().notes,
+            });
+        }
+    }
 
     get formValues() {
         return this.form.value;
@@ -284,7 +302,7 @@ export class PasswordModalComponent {
 
             const command = {
                 userId: userId,
-                url: data.URL!,
+                url: data.url!,
                 name: data.name!,
                 folder: data.folder!,
                 username: data.username!,
@@ -302,5 +320,25 @@ export class PasswordModalComponent {
                 }
             });
         }
+    }
+
+    static factory() {
+        const nzModalService = inject(NzModalService);
+    
+        return (card?: PasswordCardModel) => {
+            nzModalService.create({
+            nzContent: PasswordModalComponent,
+            nzCentered: true,
+            nzMaskClosable: true,
+            nzWidth: 800,
+            nzBodyStyle: {
+                'padding': '0'
+            },
+            nzFooter: null,
+            nzData: {
+                card,
+            },
+            });
+        };
     }
 }

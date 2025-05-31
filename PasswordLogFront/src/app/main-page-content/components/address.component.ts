@@ -1,5 +1,5 @@
 import { UserService } from './../../services/user.service';
-import { Component, ChangeDetectionStrategy, inject } from "@angular/core";
+import { Component, ChangeDetectionStrategy, inject, signal } from "@angular/core";
 import { FormControl, FormGroup, NonNullableFormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { NzButtonModule } from "ng-zorro-antd/button";
 import { NzDividerModule } from "ng-zorro-antd/divider";
@@ -9,10 +9,11 @@ import { NzIconModule } from "ng-zorro-antd/icon";
 import { NzInputModule } from "ng-zorro-antd/input";
 import { NzLayoutModule } from "ng-zorro-antd/layout";
 import { NzMenuModule } from "ng-zorro-antd/menu";
-import { NzModalModule, NzModalRef, NzModalService } from "ng-zorro-antd/modal";
+import { NZ_MODAL_DATA, NzModalModule, NzModalRef, NzModalService } from "ng-zorro-antd/modal";
 import { AuthService } from '../../services/auth.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { AllItemsModalComponent } from './all-items.component';
+import { AddressCardModel } from '../../models/Cards/AddressCardModel';
 
 export interface AddressFormGroup {
   name: FormControl<string>;
@@ -344,6 +345,10 @@ export class AddressModalComponent {
     private nzmodalref = inject(NzModalRef);
     private allItemsModalFactory = AllItemsModalComponent.factory();
 
+    private nzModalData = inject<{ card: AddressCardModel }>(NZ_MODAL_DATA);
+    
+    private card$ = signal<AddressCardModel>(this.nzModalData.card);
+
     constructor(
         private readonly userService: UserService,
         private readonly authService: AuthService,
@@ -353,7 +358,7 @@ export class AddressModalComponent {
     static factory() {
         const nzModalService = inject(NzModalService);
     
-        return () => {
+        return (card?: AddressCardModel) => {
             nzModalService.create({
             nzContent: AddressModalComponent,
             nzCentered: true,
@@ -362,7 +367,10 @@ export class AddressModalComponent {
             nzBodyStyle: {
                 'padding': '0'
             },
-            nzFooter: null
+            nzFooter: null,
+            nzData: {
+                card,
+            },
             });
         };
     }
@@ -381,6 +389,25 @@ export class AddressModalComponent {
         mobilePhone: this.fb.control<string>(''),
         notes: this.fb.control<string>('')
     });
+
+    ngOnInit(): void {
+        if (this.card$()) {
+            this.form.reset({
+                name: this.card$().name,
+                folder: this.card$().folder,
+                title: this.card$().title,
+                firstName: this.card$().firstName,
+                middleName: this.card$().middleName,
+                lastName: this.card$().lastName,
+                address1: this.card$().address1,
+                address2: this.card$().address2,
+                address3: this.card$().address3,
+                cityOrTown: this.card$().cityOrTown,
+                mobilePhone: this.card$().mobilePhone,
+                notes: this.card$().notes,
+            });
+        }
+    }
 
     get formValues() {
         return this.form.value;

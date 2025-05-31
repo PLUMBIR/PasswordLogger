@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject } from "@angular/core";
+import { Component, ChangeDetectionStrategy, inject, signal } from "@angular/core";
 import { FormControl, ReactiveFormsModule, NonNullableFormBuilder, FormGroup, Validators } from "@angular/forms";
 import { NzButtonModule } from "ng-zorro-antd/button";
 import { NzDividerModule } from "ng-zorro-antd/divider";
@@ -9,10 +9,11 @@ import { NzInputModule } from "ng-zorro-antd/input";
 import { NzLayoutModule } from "ng-zorro-antd/layout";
 import { NzMenuModule } from "ng-zorro-antd/menu";
 import { NzMessageService } from "ng-zorro-antd/message";
-import { NzModalModule, NzModalRef, NzModalService } from "ng-zorro-antd/modal";
+import { NZ_MODAL_DATA, NzModalModule, NzModalRef, NzModalService } from "ng-zorro-antd/modal";
 import { AuthService } from "../../services/auth.service";
 import { UserService } from "../../services/user.service";
 import { AllItemsModalComponent } from "./all-items.component";
+import { PaymentCardModel } from "../../models/Cards/PaymentCardModel";
 
 export interface CreditCardFormGroup {
   name: FormControl<string>;
@@ -76,7 +77,7 @@ export interface CreditCardFormGroup {
                             <div class="item">
                                 <span>Имя на карте:</span>
                                 <nz-form-item>
-                                    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Пожалуйста, введите Заголовок">
+                                    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Пожалуйста, введите имя">
                                         <input nz-input formControlName="nameOnCard" />
                                     </nz-form-control>
                                 </nz-form-item>
@@ -84,7 +85,7 @@ export interface CreditCardFormGroup {
                             <div class="item">
                                 <span>Номер:</span>
                                 <nz-form-item>
-                                    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Пожалуйста, введите Имя">
+                                    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Пожалуйста, введите номер">
                                         <input nz-input formControlName="number" />
                                     </nz-form-control>
                                 </nz-form-item>
@@ -92,15 +93,28 @@ export interface CreditCardFormGroup {
                             <div class="item">
                                 <span>Секретный код:</span>
                                 <nz-form-item>
-                                    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Пожалуйста, введите Отчество">
-                                        <input nz-input formControlName="securityCode" />
+                                    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Пожалуйста, введите секретный код">
+                                        <nz-input-group [nzSuffix]="suffixTemplate">
+                                            <input
+                                                [type]="securityCodeVisible$() ? 'text' : 'password'"
+                                                nz-input
+                                                formControlName="securityCode"
+                                            />
+                                        </nz-input-group>
                                     </nz-form-control>
                                 </nz-form-item>
+                                <ng-template #suffixTemplate>
+                                    <nz-icon
+                                        class="ant-input-password-icon"
+                                        [nzType]="securityCodeVisible$() ? 'eye-invisible' : 'eye'"
+                                        (click)="securityCodeVisible$.set(!securityCodeVisible$())"
+                                    />
+                                </ng-template>
                             </div>
                             <div class="item">
                                 <span>Дата начала:</span>
                                 <nz-form-item>
-                                    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Пожалуйста, введите Фамилию">
+                                    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Пожалуйста, введите дату начала">
                                         <input nz-input formControlName="startDate" />
                                     </nz-form-control>
                                 </nz-form-item>
@@ -108,7 +122,7 @@ export interface CreditCardFormGroup {
                             <div class="item">
                                 <span>Дата окончания срока:</span>
                                 <nz-form-item>
-                                    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Пожалуйста, введите Aдрес">
+                                    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Пожалуйста, введите дату окончания">
                                         <input nz-input formControlName="expirationDate" />
                                     </nz-form-control>
                                 </nz-form-item>
@@ -307,29 +321,16 @@ export class CreditCardModalComponent {
     private fb = inject(NonNullableFormBuilder); 
     private nzmodalref = inject(NzModalRef);
     private allItemsModalFactory = AllItemsModalComponent.factory();
+    private nzModalData = inject<{ card: PaymentCardModel }>(NZ_MODAL_DATA);
+    securityCodeVisible$ = signal<boolean>(false);
+
+    private card$ = signal<PaymentCardModel>(this.nzModalData.card);
 
     constructor(
         private readonly userService: UserService,
         private readonly authService: AuthService,
         private message: NzMessageService
     ) {}
-
-    static factory() {
-        const nzModalService = inject(NzModalService);
-    
-        return () => {
-            nzModalService.create({
-            nzContent: CreditCardModalComponent,
-            nzCentered: true,
-            nzMaskClosable: true,
-            nzWidth: 1000,
-            nzBodyStyle: {
-                'padding': '0'
-            },
-            nzFooter: null
-            });
-        };
-    }
 
     form = new FormGroup<CreditCardFormGroup>({
         name: this.fb.control<string>('', [Validators.required]),
@@ -341,6 +342,21 @@ export class CreditCardModalComponent {
         expirationDate: this.fb.control<string>('', [Validators.required]),
         notes: this.fb.control<string>('')
     });
+
+    ngOnInit(): void {
+        if (this.card$()) {
+            this.form.reset({
+                name: this.card$().name,
+                folder: this.card$().folder,
+                nameOnCard: this.card$().nameOnCard,
+                number: this.card$().number,
+                securityCode: this.card$().securityCode,
+                startDate: this.card$().startDate,
+                expirationDate: this.card$().expirationDate,
+                notes: this.card$().notes
+            });
+        }
+    }
 
     get formValues() {
         return this.form.value;
@@ -383,5 +399,25 @@ export class CreditCardModalComponent {
                 }
             });
         }
+    }
+
+    static factory() {
+        const nzModalService = inject(NzModalService);
+    
+        return (card?: PaymentCardModel) => {
+            nzModalService.create({
+            nzContent: CreditCardModalComponent,
+            nzCentered: true,
+            nzMaskClosable: true,
+            nzWidth: 1000,
+            nzBodyStyle: {
+                'padding': '0'
+            },
+            nzFooter: null,
+            nzData: {
+                card,
+            },
+            });
+        };
     }
 }
