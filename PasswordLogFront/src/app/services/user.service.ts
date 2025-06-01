@@ -9,6 +9,7 @@ import { CreditCardModel } from "../models/CreditCardModel";
 import { DeleteCardModel } from '../models/DeleteCardModel';
 import { AllUserDataModel } from '../models/Cards/AllUserDataModel';
 import { PasswordGenerateModel } from '../models/passwordGenerateModel';
+import { BaseCardModel } from '../models/Cards/BaseCardModel';
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +22,7 @@ export class UserService {
     }
 
     addNote(noteModel: NoteModel) {
-      return this.http.post(`${API_URL}/user/note`, noteModel);
+      return this.http.post(`${API_URL}/user/notes`, noteModel);
     }
 
     addAddress(addressModel: AddressModel) {
@@ -42,6 +43,11 @@ export class UserService {
 
     getAllUserData(userId: string) {
       return this.http.get<AllUserDataModel>(`${API_URL}/user/fulldata/${userId}`);
+    }
+
+    updateCard(baseCard: BaseCardModel) {
+      console.log("обновление")
+      return this.http.post(`${API_URL}/user/updateCard`, baseCard);
     }
 
     deleteCardById(cardModel: DeleteCardModel) {

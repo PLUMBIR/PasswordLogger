@@ -4,6 +4,6 @@ export interface PasswordModel {
     name: string;
     folder: string;
     username: string;
-    password: string;
+    sitePassword: string;
     notes?: string;
 }

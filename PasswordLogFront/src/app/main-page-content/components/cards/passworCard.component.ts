@@ -1,4 +1,4 @@
-import { Component, input, output, signal } from "@angular/core";
+import { Component, computed, input, output, signal } from "@angular/core";
 import { NzIconModule } from "ng-zorro-antd/icon";
 import { BaseCardModel, CardType } from "../../../models/Cards/BaseCardModel";
 
@@ -11,13 +11,21 @@ import { BaseCardModel, CardType } from "../../../models/Cards/BaseCardModel";
   template: `
     <div class="card">
         <div class="card-content">
-            <div class="item-icon" [style.background-color]="itemColor()">
-                <!-- <img src="twitch.png" alt=""> -->
-                <nz-icon nzType="lock" nzTheme="outline" style="font-size: 32px; color: #fff"/>
+          @if(imageSource()) {
+            <div class="item-icon">
+                  <img [src]="imageSource()" alt="">
                 <div class="overlay">
-                    <button class="btn">Перейти</button>
+                    <button class="btn" (click)="openUrl(card().url!)">Перейти</button>
                 </div>
             </div>
+          } @else {
+            <div class="item-icon" [style.background-color]="itemColor()">
+                <nz-icon nzType="lock" nzTheme="outline" style="font-size: 32px; color: #fff"/>
+                <div class="overlay">
+                    <button class="btn" (click)="openUrl(card().url!)">Перейти</button>
+                </div>
+            </div>
+          }
             <div class="item-info">
                 <div class="item-info-name">
                     <p>{{card().name}}</p>
@@ -137,10 +145,28 @@ export class PasswordCardComponent {
     "#F5D76E",
   ];
 
+  iconDictionary: Record<string, string> = {
+    "twitch": "twitch.png",
+    "github": "github.png",
+    "google": "google.png",
+    "facebook": "facebook.png",
+    "twitter": "twitter.png"
+  };
+
+  imageSource = computed(() => {
+    const key = Object.keys(this.iconDictionary).find(k => this.card().name?.includes(k));
+    return key ? this.iconDictionary[key] : null;
+  });
+
+
   getRandomColor = () => this.pastelColors[Math.floor(Math.random() * this.pastelColors.length)];
 
   itemColor = signal(this.getRandomColor());
 
   onEditCard = output<{ id: string; type: CardType }>();
   onDeleteCard = output<{ id: string; type: CardType }>();
+
+  openUrl(url: string) {
+    window.open(url, '_blank');
+  }
 }

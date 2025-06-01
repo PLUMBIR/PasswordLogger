@@ -14,6 +14,8 @@ import { NZ_MODAL_DATA, NzModalModule, NzModalRef, NzModalService } from "ng-zor
 import { AuthService } from '../../services/auth.service';
 import { AllItemsModalComponent } from './all-items.component';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { BaseCardModel } from '../../models/Cards/BaseCardModel';
+import { CardStoreService } from '../../services/card.service';
 
 export interface PasswordFormGroup {
   url: FormControl<string>;
@@ -253,6 +255,8 @@ export class PasswordModalComponent implements OnInit {
 
     private card$ = signal<PasswordCardModel>(this.nzModalData.card);
 
+    cardStore = inject(CardStoreService);
+
     constructor(
         private readonly userService: UserService,
         private readonly authService: AuthService,
@@ -296,29 +300,46 @@ export class PasswordModalComponent implements OnInit {
 
     onSubmit() {
         const userId = this.authService.user$()?.id;
-
+        console.log("алеееееееееееееееееееееее")
         if (userId) {
             const data = this.formValues;
+            const card = this.card$();
 
             const command = {
+                id: card?.id,
+                type: 'password',
                 userId: userId,
                 url: data.url!,
                 name: data.name!,
                 folder: data.folder!,
                 username: data.username!,
-                password: data.password!,
+                sitePassword: data.password!,
                 notes: data.notes,
             };
 
-            this.userService.addPassword(command).subscribe({
-                next: (result) => {
-                    this.nzmodalref.close();
-                    this.message.success('Пароль успешно создан.');
-                },
-                error: (err) => {
-                    this.message.error('При создании пароля произошла ошибка.');
-                }
-            });
+            if (card?.id) {
+                this.userService.updateCard(command as BaseCardModel).subscribe({
+                    next: () => {
+                        this.nzmodalref.close();
+                        this.cardStore.fetchAllUserData();
+                        this.message.success('Пароль успешно обновлен.');
+                    },
+                    error: () => {
+                        this.message.error('При обновлении пароля произошла ошибка.');
+                    }
+                });
+            } else {
+                this.userService.addPassword(command).subscribe({
+                    next: () => {
+                        this.nzmodalref.close();
+                        this.cardStore.fetchAllUserData();
+                        this.message.success('Пароль успешно создан.');
+                    },
+                    error: () => {
+                        this.message.error('При создании пароля произошла ошибка.');
+                    }
+                });
+            }
         }
     }
 

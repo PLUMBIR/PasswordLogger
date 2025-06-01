@@ -14,6 +14,8 @@ import { AuthService } from "../../services/auth.service";
 import { UserService } from "../../services/user.service";
 import { AllItemsModalComponent } from "./all-items.component";
 import { BankAccountCardModel } from "../../models/Cards/BankAccountCardModel";
+import { BaseCardModel } from "../../models/Cards/BaseCardModel";
+import { CardStoreService } from "../../services/card.service";
 
 export interface BankFormGroup { 
   name: FormControl<string>;          
@@ -370,6 +372,8 @@ export class BankAccountModalComponent {
 
     private card$ = signal<BankAccountCardModel>(this.nzModalData.card);
 
+    cardStore = inject(CardStoreService);
+
     constructor(
         private readonly userService: UserService,
         private readonly authService: AuthService,
@@ -442,8 +446,11 @@ export class BankAccountModalComponent {
 
         if (userId) {
             const data = this.formValues;
+            const card = this.card$();
 
             const command = {
+                id: card?.id,
+                type: 'bankAccount',
                 userId: userId,
                 name: data.name!,
                 folder: data.folder!,
@@ -459,12 +466,36 @@ export class BankAccountModalComponent {
             this.userService.addBankAccount(command).subscribe({
                 next: (result) => {
                     this.nzmodalref.close();
+                    this.cardStore.fetchAllUserData();
                     this.message.success('Банковский аккаунт успешно добавлен.');
                 },
                 error: (err) => {
                     this.message.error('При создании банковского аккаунта произошла ошибка.');
                 }
             });
+
+            if (card?.id) {
+                this.userService.updateCard(command as BaseCardModel).subscribe({
+                    next: () => {
+                        this.nzmodalref.close();
+                        this.cardStore.fetchAllUserData();
+                        this.message.success('Банковский аккаунт успешно обновлен.');
+                    },
+                    error: () => {
+                        this.message.error('При обновлении банковский аккаунт произошла ошибка.');
+                    }
+                });
+            } else {
+                this.userService.addBankAccount(command).subscribe({
+                    next: () => {
+                        this.nzmodalref.close();
+                        this.message.success('Банковский аккаунт успешно добавлен.');
+                    },
+                    error: () => {
+                        this.message.error('При создании банковского аккаунта произошла ошибка.');
+                    }
+                });
+            }
         }
     }
 }

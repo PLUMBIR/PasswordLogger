@@ -29,6 +29,7 @@ import { CreditCardModalComponent } from './components/card.component';
 import { BankAccountModalComponent } from './components/bank.component';
 import { AllUserDataModel } from '../models/Cards/AllUserDataModel';
 import { PasswordGeneratorModalComponent } from './components/password-generator.component';
+import { CardStoreService } from '../services/card.service';
 
 @Component({
   selector: 'app-main-page-content',
@@ -61,67 +62,66 @@ export class MainPageContentComponent implements OnInit {
   private allItemsModalFactory = AllItemsModalComponent.factory();
   private passwordGeneratorFactory = PasswordGeneratorModalComponent.factory();
 
-  userService = inject(UserService);
-  authService = inject(AuthService);
+  cardStore = inject(CardStoreService);
   
-  userEmail$ = signal<string>(this.authService.user$()?.email!);
+  userEmail$ = signal<string>(inject(AuthService).user$()?.email!);
   isCollapsed$ = signal<boolean>(false);
 
   typehead$ = signal<string>('');
   selectedType$ = signal<string | null>(null);
   sortOption$ = signal<string>('имени a-z');
 
-  allUserData$ = signal<AllUserDataModel>({
-    passwords: [],
-    notes: [],
-    addresses: [],
-    creditCards: [],
-    bankAccounts: []
-  });
+  // allUserData$ = signal<AllUserDataModel>({
+  //   passwords: [],
+  //   notes: [],
+  //   addresses: [],
+  //   creditCards: [],
+  //   bankAccounts: []
+  // });
 
-  allCardsViewModel$ : Signal<BaseCardModel[]> = computed(() => {
-    const data = this.allUserData$();
+  // allCardsViewModel$ : Signal<BaseCardModel[]> = computed(() => {
+  //   const data = this.allUserData$();
 
-    const passwords = data.passwords.map((card) => ({
-      ...card,
-      type: 'password' as const,
-    }));
+  //   const passwords = data.passwords.map((card) => ({
+  //     ...card,
+  //     type: 'password' as const,
+  //   }));
 
-    const notes = data.notes.map((card) => ({
-      ...card,
-      type: 'note' as const,
-    }));
+  //   const notes = data.notes.map((card) => ({
+  //     ...card,
+  //     type: 'note' as const,
+  //   }));
 
-    const addresses = data.addresses.map((card) => ({
-      ...card,
-      type: 'address' as const,
-    }));
+  //   const addresses = data.addresses.map((card) => ({
+  //     ...card,
+  //     type: 'address' as const,
+  //   }));
 
-    const creditCards = data.creditCards.map((card) => ({
-      ...card,
-      type: 'creditCard' as const,
-    }));
+  //   const creditCards = data.creditCards.map((card) => ({
+  //     ...card,
+  //     type: 'creditCard' as const,
+  //   }));
 
-    const bankAccounts = data.bankAccounts.map((card) => ({
-      ...card,
-      type: 'bankAccount' as const,
-    }));
+  //   const bankAccounts = data.bankAccounts.map((card) => ({
+  //     ...card,
+  //     type: 'bankAccount' as const,
+  //   }));
 
-    return [
-      ...passwords,
-      ...notes,
-      ...addresses,
-      ...creditCards,
-      ...bankAccounts
-    ];
-  });
+  //   return [
+  //     ...passwords,
+  //     ...notes,
+  //     ...addresses,
+  //     ...creditCards,
+  //     ...bankAccounts
+  //   ];
+  // });
 
   filteredCards$ = computed(() => {
     const query = this.typehead$().toLowerCase().trim();
     const type = this.selectedType$();
     const sortOption = this.sortOption$();
 
-    let cards = this.allCardsViewModel$()
+    let cards = this.cardStore.allCardsViewModel$()
       .filter((card) => (!type || card.type === type))
       .filter((card) => (!query || card.name.toLowerCase().includes(query))); 
 
@@ -146,7 +146,7 @@ export class MainPageContentComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getAllUserData();
+    this.cardStore.fetchAllUserData();
   }
 
   toggleCollapsed(): void {
@@ -180,52 +180,78 @@ export class MainPageContentComponent implements OnInit {
     this.passwordGeneratorFactory();
   }
 
-  getAllUserData() {
-    this.userService.getAllUserData(this.authService.user$()?.id!)
-      .subscribe((items) => {
-        this.allUserData$.set(items);
-      });
-  }
-
   onDeleteCard($event: any) {
-    const command = {
-      userId: this.authService.user$()?.id!,
-      cardId: $event.id,
-      cardType: $event.type
-    }
-
-    this.userService.deleteCardById(command)
-      .subscribe({
-        next: () => {
-          this.message.success('Удалено.');
-          this.getAllUserData();
-        },
-        error: () => this.message.error('Ошибка при удалении.')
-    });
+    this.cardStore.deleteCard($event.id, $event.type);
   }
 
   onEditCard($event: any) {
-    const allCards = this.allCardsViewModel$();
-
-    const card = allCards.find((o) => o.id === $event.id);
+    const card = this.cardStore.allCardsViewModel$().find(o => o.id === $event.id);
 
     switch (card!.type) {
       case 'password':
-         this.passwordModalFactory(card as PasswordCardModel);
+        this.passwordModalFactory(card as PasswordCardModel);
         break;
       case 'note':
-          this.noteModalFactory(card as NoteCardModel);
+        this.noteModalFactory(card as NoteCardModel);
         break;
       case 'address':
-          this.addressModalFactory(card as AddressCardModel);
+        this.addressModalFactory(card as AddressCardModel);
         break;
       case 'creditCard':
-          this.creditCardModalFactory(card as PaymentCardModel);
+        this.creditCardModalFactory(card as PaymentCardModel);
         break;
       case 'bankAccount':
-          this.bankAccountModalFactory(card as BankAccountCardModel);
+        this.bankAccountModalFactory(card as BankAccountCardModel);
         break;
-    } 
+    }
   }
+
+  // getAllUserData() {
+  //   this.userService.getAllUserData(this.authService.user$()?.id!)
+  //     .subscribe((items) => {
+  //       this.allUserData$.set(items);
+  //     });
+  // }
+
+  // onDeleteCard($event: any) {
+  //   const command = {
+  //     userId: this.authService.user$()?.id!,
+  //     cardId: $event.id,
+  //     cardType: $event.type
+  //   }
+
+  //   this.userService.deleteCardById(command)
+  //     .subscribe({
+  //       next: () => {
+  //         this.message.success('Удалено.');
+  //         this.getAllUserData();
+  //       },
+  //       error: () => this.message.error('Ошибка при удалении.')
+  //   });
+  // }
+
+  // onEditCard($event: any) {
+  //   const allCards = this.allCardsViewModel$();
+
+  //   const card = allCards.find((o) => o.id === $event.id);
+
+  //   switch (card!.type) {
+  //     case 'password':
+  //        this.passwordModalFactory(card as PasswordCardModel);
+  //       break;
+  //     case 'note':
+  //         this.noteModalFactory(card as NoteCardModel);
+  //       break;
+  //     case 'address':
+  //         this.addressModalFactory(card as AddressCardModel);
+  //       break;
+  //     case 'creditCard':
+  //         this.creditCardModalFactory(card as PaymentCardModel);
+  //       break;
+  //     case 'bankAccount':
+  //         this.bankAccountModalFactory(card as BankAccountCardModel);
+  //       break;
+  //   } 
+  // }
 }
 

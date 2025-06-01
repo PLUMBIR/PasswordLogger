@@ -46,6 +46,11 @@ namespace PasswordLogBackend.Api.Endpoints
                 return Results.Ok(password);
             });
 
+            app.MapPost("user/updateCard", async (IMediator mediator, UpdateCardModel model) =>
+            {
+                var response = await mediator.Send(new UpdateCardCommand(model));
+                return response;
+            });
 
             app.MapGet("user/passwords/{userId}", async (IMediator mediator, string userId) =>
             {

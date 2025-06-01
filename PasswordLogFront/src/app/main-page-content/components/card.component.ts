@@ -14,6 +14,8 @@ import { AuthService } from "../../services/auth.service";
 import { UserService } from "../../services/user.service";
 import { AllItemsModalComponent } from "./all-items.component";
 import { PaymentCardModel } from "../../models/Cards/PaymentCardModel";
+import { BaseCardModel } from "../../models/Cards/BaseCardModel";
+import { CardStoreService } from "../../services/card.service";
 
 export interface CreditCardFormGroup {
   name: FormControl<string>;
@@ -326,6 +328,8 @@ export class CreditCardModalComponent {
 
     private card$ = signal<PaymentCardModel>(this.nzModalData.card);
 
+    cardStore = inject(CardStoreService);
+
     constructor(
         private readonly userService: UserService,
         private readonly authService: AuthService,
@@ -376,8 +380,11 @@ export class CreditCardModalComponent {
 
         if (userId) {
             const data = this.formValues;
+            const card = this.card$();
 
             const command = {
+                id: card?.id,
+                type: 'creditCard',
                 userId: userId,
                 name: data.name!,
                 folder: data.folder!,
@@ -389,15 +396,29 @@ export class CreditCardModalComponent {
                 notes: data.notes,
             };
 
-            this.userService.addCreditCard(command).subscribe({
-                next: (result) => {
-                    this.nzmodalref.close();
-                    this.message.success('Кредитная карта успешно добавлена.');
-                },
-                error: (err) => {
-                    this.message.error('При создании кредитной карты произошла ошибка.');
-                }
-            });
+            if (card?.id) {
+                this.userService.updateCard(command as BaseCardModel).subscribe({
+                    next: () => {
+                        this.nzmodalref.close();
+                        this.cardStore.fetchAllUserData();
+                        this.message.success('Кредитная карта успешно обновлена.');
+                    },
+                    error: () => {
+                        this.message.error('При обновлении кредитной карты произошла ошибка.');
+                    }
+                });
+            } else {
+                this.userService.addCreditCard(command).subscribe({
+                    next: () => {
+                        this.nzmodalref.close();
+                        this.cardStore.fetchAllUserData();
+                        this.message.success('Кредитная карта успешно добавлена.');
+                    },
+                    error: () => {
+                        this.message.error('При создании кредитной карты произошла ошибка.');
+                    }
+                });
+            }
         }
     }
 

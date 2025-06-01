@@ -14,6 +14,8 @@ import { AuthService } from '../../services/auth.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { AllItemsModalComponent } from './all-items.component';
 import { AddressCardModel } from '../../models/Cards/AddressCardModel';
+import { BaseCardModel } from '../../models/Cards/BaseCardModel';
+import { CardStoreService } from '../../services/card.service';
 
 export interface AddressFormGroup {
   name: FormControl<string>;
@@ -349,6 +351,8 @@ export class AddressModalComponent {
     
     private card$ = signal<AddressCardModel>(this.nzModalData.card);
 
+    cardStore = inject(CardStoreService);
+
     constructor(
         private readonly userService: UserService,
         private readonly authService: AuthService,
@@ -427,8 +431,11 @@ export class AddressModalComponent {
 
         if (userId) {
             const data = this.formValues;
+            const card = this.card$();
 
             const command = {
+                id: card?.id,
+                type: 'address',
                 userId: userId,
                 name: data.name!,
                 folder: data.folder!,
@@ -444,12 +451,29 @@ export class AddressModalComponent {
                 notes: data.notes,
             };
 
-            this.userService.addAddress(command).subscribe(
-                (result) => {
-                    this.nzmodalref.close();
-                    this.message.success('Адрес успешно добавлен.');
-                }
-            );
+            if (card?.id) {
+                this.userService.updateCard(command as BaseCardModel).subscribe({
+                    next: () => {
+                        this.nzmodalref.close();
+                        this.cardStore.fetchAllUserData();
+                        this.message.success('Адрес успешно обновлен.');
+                    },
+                    error: () => {
+                        this.message.error('При обновлении Адреса произошла ошибка.');
+                    }
+                });
+            } else {
+                this.userService.addAddress(command).subscribe({
+                    next: () => {
+                        this.nzmodalref.close();
+                        this.cardStore.fetchAllUserData();
+                        this.message.success('Адрес успешно добавлен.');
+                    },
+                    error: () => {
+                        this.message.error('При создании адреса произошла ошибка.');
+                    }
+                });
+            }
         }
     }
 }

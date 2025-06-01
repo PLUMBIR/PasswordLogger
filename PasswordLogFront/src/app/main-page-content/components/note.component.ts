@@ -14,6 +14,8 @@ import { AuthService } from '../../services/auth.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { AllItemsModalComponent } from './all-items.component';
 import { NoteCardModel } from '../../models/Cards/NoteCardModel';
+import { BaseCardModel } from '../../models/Cards/BaseCardModel';
+import { CardStoreService } from '../../services/card.service';
 
 export interface NoteFormGroup {
   name: FormControl<string>;
@@ -227,6 +229,8 @@ export class NoteModalComponent implements OnInit{
 
     private card$ = signal<NoteCardModel>(this.nzModalData.card);
 
+    cardStore = inject(CardStoreService);
+
     constructor(
         private readonly userService: UserService,
         private readonly authService: AuthService,
@@ -267,20 +271,40 @@ export class NoteModalComponent implements OnInit{
 
         if (userId) {
             const data = this.formValues;
+            const card = this.card$();
 
             const command = {
+                id: card?.id,
+                type: 'note',
                 userId: userId,
                 name: data.name!,
                 folder: data.folder!,
                 text: data.text!,
             };
 
-            this.userService.addNote(command).subscribe(
-                (result) => {
-                    this.nzmodalref.close();
-                    this.message.success('Заметка успешно создана.');
-                }
-            );
+            if (card?.id) {
+                this.userService.updateCard(command as BaseCardModel).subscribe({
+                    next: () => {
+                        this.nzmodalref.close();
+                        this.cardStore.fetchAllUserData();
+                        this.message.success('Заметка успешно обновлена.');
+                    },
+                    error: () => {
+                        this.message.error('При обновлении заметки произошла ошибка.');
+                    }
+                });
+            } else {
+                this.userService.addNote(command).subscribe({
+                    next: () => {
+                        this.nzmodalref.close();
+                        this.cardStore.fetchAllUserData();
+                        this.message.success('Заметка успешно создана.');
+                    },
+                    error: () => {
+                        this.message.error('При создании заметки произошла ошибка.');
+                    }
+                });
+            }
         }
     }
 
