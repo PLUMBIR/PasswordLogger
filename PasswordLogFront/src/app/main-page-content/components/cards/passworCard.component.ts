@@ -1,6 +1,8 @@
 import { Component, computed, input, output, signal } from "@angular/core";
 import { NzIconModule } from "ng-zorro-antd/icon";
 import { BaseCardModel, CardType } from "../../../models/Cards/BaseCardModel";
+import { iconDictionary } from "../../../constants/photos";
+import { pastelColors } from "../../../constants/colors";
 
 @Component({
   selector: 'password-card',
@@ -135,31 +137,13 @@ import { BaseCardModel, CardType } from "../../../models/Cards/BaseCardModel";
 export class PasswordCardComponent {
   card = input.required<BaseCardModel>();
 
-  pastelColors = [
-    "#A7C7E7", 
-    "#F4A3BB", 
-    "#B8E986", 
-    "#FFD580", 
-    "#C3B1E1",  
-    "#A5D6A7", 
-    "#F5D76E",
-  ];
-
-  iconDictionary: Record<string, string> = {
-    "twitch": "twitch.png",
-    "github": "github.png",
-    "google": "google.png",
-    "facebook": "facebook.png",
-    "twitter": "twitter.png"
-  };
-
   imageSource = computed(() => {
-    const key = Object.keys(this.iconDictionary).find(k => this.card().name?.includes(k));
-    return key ? this.iconDictionary[key] : null;
+    const key = Object.keys(iconDictionary).find(k => this.card().name?.includes(k));
+    return key ? iconDictionary[key] : null;
   });
 
 
-  getRandomColor = () => this.pastelColors[Math.floor(Math.random() * this.pastelColors.length)];
+  getRandomColor = () => pastelColors[Math.floor(Math.random() * pastelColors.length)];
 
   itemColor = signal(this.getRandomColor());
 

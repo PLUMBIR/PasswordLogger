@@ -26,7 +26,7 @@ import { BaseCardModel, CardType } from "../../../models/Cards/BaseCardModel";
                     <nz-icon nzType="bank" nzTheme="outline" style="font-size: 32px; color: #fff"/>
                 }
                 <div class="overlay">
-                    <button class="btn" >Изменить</button>
+                    <button class="btn" (click)="onEditCard.emit({ id: card().id, type: 'creditCard' })">Изменить</button>
                 </div>
             </div>
             <div class="item-info">

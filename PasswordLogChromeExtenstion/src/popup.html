@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Парольник</title>
+        <link rel="stylesheet" type="text/css" href="popup.css"/>
+    </head>
+    <body>
+        <div class="login-form">
+            <div class="auth-logo">
+                <span>ПАРОЛЬНИК</span>
+            </div>
+            <div class="auth-text">
+                <h1>Войти</h1>
+                <p>или <a href="#">Зарегистрироваться</a></p>
+            </div>
+            <form>
+                <div>
+                    <input type="email" id="email" placeholder="Электронная почта" required>
+                    <label id="emailError"></label>
+                </div>
+                <div>
+                    <input type="password" id="password" placeholder="Мастер пароль" required>
+                    <label id="passwordError"></label>
+                </div>
+                <button type="submit" id="loginBtn">Войти</button>
+                <div style="text-align: center;">
+                    <a href="#" class="forgot-password">Забыли пароль?</a>
+                </div>
+            </form>
+        </div>
+        <script src="popup.js"></script>
+    </body>
+</html>

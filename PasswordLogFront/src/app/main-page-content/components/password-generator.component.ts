@@ -191,10 +191,10 @@ export class PasswordGeneratorModalComponent {
     passwordText$ = signal<string>('');
     strengthText$ = signal<string>('');
     passwordLength$ = signal<number>(12);
-    uppercaseCheck$ = signal<boolean>(false);
-    lowercaseCheck$ = signal<boolean>(false);
-    numbersCheck$ = signal<boolean>(false);
-    symbolsCheck$ = signal<boolean>(false);
+    uppercaseCheck$ = signal<boolean>(true);
+    lowercaseCheck$ = signal<boolean>(true);
+    numbersCheck$ = signal<boolean>(true);
+    symbolsCheck$ = signal<boolean>(true);
 
     constructor(
         private readonly userService: UserService,
