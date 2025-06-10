@@ -41,7 +41,7 @@
 .password-generator-btn {
     width: 100%;
     background-color: #3c4a54;
-    color: #a9b9c5;
+    color: #fff;
     font-family: Open Sans, sans-serif;
     font-size: 16px;
     font-weight: 600;
@@ -52,7 +52,7 @@
 
     nz-icon {
         font-size: 21px;
-        color: #a9b9c5;
+        color: #0080ff;
         margin-right: 5px;
     }
 }
@@ -103,6 +103,8 @@
 .user-icon {
     nz-icon {
         color: #fff;
+        cursor: pointer;
+        font-size: 14px;
     }
 }
 
@@ -129,6 +131,34 @@
     background-color: #fff;
     border-radius: 2px;
     box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+    cursor: pointer;
+
+    font-family: Open Sans, sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    margin-right: 5px;
+    line-height: 40px;
+
+    span {
+        font-size: 14px;
+        font-weight: 100;
+    }
+
+    nz-icon {
+        margin-left: 5px;
+    }
+}
+
+.folder {
+    display: flex;
+    padding: 0px 48px 0;
+}
+
+.order-options-folder {
+    font-size: 15px;
+    height: 40px;
+    line-height: 40px;
+    border-radius: 2px;
     cursor: pointer;
 
     font-family: Open Sans, sans-serif;

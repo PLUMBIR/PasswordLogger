@@ -1,0 +1,53 @@
+<div class="modal-content">
+    <div class="left-part">
+        <div class="avatar">
+            <img [src]="selectedImage$()" alt="Selected Image" style="border-radius: 50%; width: 150px; height: 150px;">
+        </div>
+        <div style="display: flex; justify-content: center;">
+            <button type="button" class="button-styles" (click)="fileInput.click()">Вставить фото</button>
+            <input type="file" (change)="onFileSelected($event)" style="display: none;" #fileInput>
+        </div>
+    </div>
+    <div class="right-part" [formGroup]="form">
+        <div class="email-title">
+            Email
+            <span style="margin-top: 8px; margin-bottom: 8px; font-size: 14px; color: #919aa3;">{{user?.email}}</span>
+        </div>
+        <div class="password-title">
+            <span class="password-title-span">Мастер пароль:</span>
+            <nz-form-item>
+                <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Пожалуйста, введите пароль">
+                    <nz-input-group [nzSuffix]="suffixTemplate">
+                        <input
+                            [type]="passwordVisible$() ? 'text' : 'password'"
+                            nz-input
+                            id="password"
+                            formControlName="password"
+                            placeholder="Пароль"
+                        />
+                    </nz-input-group>
+                </nz-form-control>
+
+                <ng-template #suffixTemplate>
+                    <nz-icon
+                        class="ant-input-password-icon"
+                        [nzType]="passwordVisible$() ? 'eye-invisible' : 'eye'"
+                        (click)="passwordVisible$.set(!passwordVisible$())"
+                    />
+                </ng-template>
+            </nz-form-item>
+        </div>
+        <div class="note-title">
+            <span class="password-title-span">Примечания к паролю:</span>
+            <nz-form-item style="margin-bottom: 0px;">
+                <nz-form-control [nzSpan]="12" nzHasFeedback>
+                    <nz-textarea-count [nzMaxCharacterCount]="200">
+                        <textarea formControlName="notes" nz-input rows="2"></textarea>
+                    </nz-textarea-count>
+                </nz-form-control>
+            </nz-form-item>
+        </div>
+
+        <button class="changePassword-btn" (click)="changePassword()">Изменить</button>
+    </div>
+</div>

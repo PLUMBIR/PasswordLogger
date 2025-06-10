@@ -1,5 +1,8 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Identity;
 using PasswordLogBackend.Api.Commands;
+using PasswordLogBackend.Api.Common.Entities;
 using PasswordLogBackend.Api.Common.Extensions;
 using PasswordLogBackend.Api.Common.Models;
 using PasswordLogBackend.Api.Queries;
@@ -40,16 +43,38 @@ namespace PasswordLogBackend.Api.Endpoints
                 return response;
             });
 
-            app.MapPost("user/passwordgenerator", (PasswordGeneratorModel model) =>
+            app.MapPost("user/passwordgenerator", (PasswordGeneratorModel command) =>
             {
-                var password = PasswordGeneratorExtension.GeneratePassword(model);
+                var password = PasswordGeneratorExtension.GeneratePassword(command);
                 return Results.Ok(password);
             });
 
-            app.MapPost("user/updateCard", async (IMediator mediator, UpdateCardModel model) =>
+            app.MapPost("user/updateCard", async (IMediator mediator, UpdateCardModel command) =>
             {
-                var response = await mediator.Send(new UpdateCardCommand(model));
+                var response = await mediator.Send(new UpdateCardCommand(command));
                 return response;
+            });
+
+            app.MapPost("user/change-password", async (IMediator mediator, ChangePasswordModel request) =>
+            {
+                var command = new ChangePasswordCommand(request);
+                var success = await mediator.Send(command);
+
+                if (success)
+                    return Results.Ok(new { message = "Пароль успешно изменен" });
+                else
+                    return Results.BadRequest(new { message = "Не удалось изменить пароль" });
+            });
+
+            app.MapPost("user/update-avatar", async (IMediator mediator, UpdateUserAvatarModel request) =>
+            {
+                var command = new UpdateUserAvatarCommand(request);
+                var userDto = await mediator.Send(command);
+
+                if (userDto != null)
+                    return Results.Ok(userDto);
+                else
+                    return Results.BadRequest(new { message = "Не удалось обновить фотку" });
             });
 
             app.MapGet("user/passwords/{userId}", async (IMediator mediator, string userId) =>
@@ -88,7 +113,6 @@ namespace PasswordLogBackend.Api.Endpoints
 
                 return await mediator.Send(new DeleteCardByIdComand(command.UserId, command.CardId, command.CardType));
             });
-
         }
     }
 }

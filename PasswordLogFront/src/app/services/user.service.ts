@@ -10,6 +10,8 @@ import { DeleteCardModel } from '../models/DeleteCardModel';
 import { AllUserDataModel } from '../models/Cards/AllUserDataModel';
 import { PasswordGenerateModel } from '../models/passwordGenerateModel';
 import { BaseCardModel } from '../models/Cards/BaseCardModel';
+import { UserModel } from '../models/UserModel';
+import { tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -54,5 +56,22 @@ export class UserService {
       return this.http.delete(`${API_URL}/user/card`, {
         body: cardModel,
       });
+    }
+
+    updateAvatar(userId: string, avatar: string){
+      const command = {
+        userId,
+        avatar
+      };
+
+      return this.http
+        .post<UserModel>(`${API_URL}/user/update-avatar`, command)
+        .pipe(
+          tap((res) => {
+            if (res != null) {
+              localStorage.setItem('user', JSON.stringify(res));
+            }
+          })
+        );
     }
 }

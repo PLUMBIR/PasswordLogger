@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { NZ_MODAL_DATA, NzModalModule, NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
+import { NzModalModule, NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
 import { AbstractControl, FormControl, FormGroup, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
@@ -12,6 +12,7 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { Observable, Observer } from 'rxjs';
 import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
+import { SignInModalComponent } from '../sign-in-modal/sign-in-modal.component';
 
 export interface SignUpFormGroup {
   email: FormControl<string>;
@@ -37,7 +38,7 @@ export interface SignUpFormGroup {
   template: `
     <div class="modal-title">
       <h2>Создать аккаунт</h2>
-      <p>или <a href="">Войти</a></p>
+      <p>или <a (click)="openSignInModal()">Войти</a></p>
     </div>
     <nz-divider></nz-divider>
     <form nz-form [formGroup]="form" (ngSubmit)="onSubmit()">
@@ -164,6 +165,7 @@ export class SignUpModalComponent {
   router: Router = inject(Router);
   private nzmodalref = inject(NzModalRef);
   private fb = inject(NonNullableFormBuilder);
+  private signInModalFactory = SignInModalComponent.factory();
 
   constructor(private readonly authService: AuthService) {}
 
@@ -226,5 +228,10 @@ export class SignUpModalComponent {
         this.router.navigate(['/profile']);
       }
     });
+  }
+
+  openSignInModal() {
+    this.nzmodalref.close();
+    this.signInModalFactory();
   }
 }

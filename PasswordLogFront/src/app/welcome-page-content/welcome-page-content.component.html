@@ -7,7 +7,7 @@
                     <nz-icon nzType="chrome" nzTheme="outline" />
                     <nz-icon nzType="google" nzTheme="outline" />
                     <nz-rate [ngModel]="4.5" nzAllowHalf nzDisabled></nz-rate>
-                    <span>30+ отзывов</span>
+                    <!-- <span>30+ отзывов</span> -->
                 </div>
                 <div class="title">
                     Каждый логин хранится в Парольнике
@@ -16,7 +16,7 @@
                     Упростите свою цифровую жизнь с помощью менеджера паролей, который создает, хранит надежные пароли для вас.
                 </div>
                 <div class="start-btn">
-                    <button>
+                    <button (click)="showModalSignUp()">
                         Начать
                     </button>
                 </div>
@@ -87,7 +87,7 @@
                             </ul>  
                         </div>
                         <div class="flex-content-right-btn">
-                            <button>
+                            <button (click)="showModalSignUp()">
                                 Попробовать Парольник
                             </button>
                         </div>

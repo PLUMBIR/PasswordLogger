@@ -67,12 +67,23 @@
               <span>Банковские аккаунты</span>
             </li>
           </ul>
-          <button class="password-generator-btn" (click)="showPasswordGenerator()">
-            <nz-icon nzType="control" nzTheme="outline" />
-            @if(!isCollapsed$()) {
+          @if(!isCollapsed$()) {
+            <button class="password-generator-btn" style="display: flex; align-items: flex-start;" (click)="openExtensionChrome()">
+              <nz-icon nzType="chrome" nzTheme="outline" />
+              Расширение chrome
+            </button>
+            <button class="password-generator-btn" style="display: flex; align-items: flex-start;" (click)="showPasswordGenerator()">
+              <nz-icon nzType="control" nzTheme="outline" />
               Генератор пароля
-            }
-          </button>
+            </button>
+          } @else {
+            <button class="password-generator-btn" (click)="openExtensionChrome()">
+              <nz-icon nzType="chrome" nzTheme="outline" />
+            </button>
+            <button class="password-generator-btn" (click)="showPasswordGenerator()">
+              <nz-icon nzType="control" nzTheme="outline" />
+            </button>
+          }
     </div>
     <div class="right-main-content">
         <div class="right-main-content-header">
@@ -89,14 +100,31 @@
             </div>
             <div class="right-main-content-header-user">
                 <div class="avatar">
-                    <img src="user-avatar.png" alt="">
+                    <img 
+                    [src]="userAvatar$()" 
+                    width="40px"
+                    height="40px"
+                    style="border-radius: 50%;"
+                    alt="">
                 </div>
                 <div class="user-email">
                     {{userEmail$()}}
                 </div>
-                <div class="user-icon">
+                <div class="user-icon" nz-dropdown nzTrigger="click" [nzDropdownMenu]="profile">
                     <nz-icon nzType="down" nzTheme="outline" />
                 </div>
+                <nz-dropdown-menu #profile="nzDropdownMenu">
+                  <ul nz-menu style="min-width: 150px;">
+                    <li nz-menu-item (click)="openUserProfile()">
+                      <nz-icon nzType="user" nzTheme="outline" />
+                      Профиль
+                    </li>
+                    <li nz-menu-item (click)="logOut()">
+                      <nz-icon nzType="logout" nzTheme="outline" />
+                      Выйти
+                    </li>
+                  </ul>
+                </nz-dropdown-menu>
             </div>
         </div>
         <div class="title-category">
@@ -116,6 +144,22 @@
                   </ul>
                 </nz-dropdown-menu>
             </div>
+        </div>
+        <div class="folder">
+          <div class="sort-items" nz-dropdown nzTrigger="click" [nzDropdownMenu]="menuFolders">
+            <div class="order-options-folder">
+              Папка:
+              <span>{{ userSelectFolder$() || 'Без папки' }}</span>
+              <nz-icon nzType="down" nzTheme="outline" />
+            </div>
+            <nz-dropdown-menu #menuFolders="nzDropdownMenu">
+              <ul nz-menu>
+                <li *ngFor="let folder of userFolders$()" nz-menu-item (click)="selectFolder(folder!)">
+                  {{ folder }}
+                </li>
+              </ul>
+            </nz-dropdown-menu>
+          </div>
         </div>
         <div style="margin: 0 48px;">
             <nz-divider style="margin-bottom: 12px;"></nz-divider>

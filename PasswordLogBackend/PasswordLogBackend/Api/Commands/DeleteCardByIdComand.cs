@@ -79,6 +79,5 @@ namespace PasswordLogBackend.Api.Commands
 
             return Results.Ok();
         }
-
     }
 }

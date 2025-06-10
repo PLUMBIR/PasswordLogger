@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Парольник</title>
+        <link rel="stylesheet" type="text/css" href="popup.css"/>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h2>Добавить пароль</h2>
+                <img class="close-btn" width="30" height="30" src="https://img.icons8.com/emoji/48/cross-mark-emoji.png" alt="cross-mark-emoji"/>
+            </div>
+            <div class="input-container">
+                <div class="input-group">
+                    <label for="website">URL</label>
+                    <input type="text" id="website" placeholder="example.com">
+                </div>
+
+                <div class="input-group">
+                    <label for="site-name">Имя сайта</label>
+                    <input type="text" id="site-name">
+                </div>
+
+                <div class="input-group">
+                    <label for="username">Имя пользователя</label>
+                    <input type="text" id="username" placeholder="username">
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Пароль</label>
+                    <input type="password" id="password">
+                </div>
+
+                <div class="input-group">
+                    <label for="folder">Папка</label>
+                    <input type="text" id="folder">
+                </div>
+
+                <div class="input-group">
+                    <label for="notes">Примечания</label>
+                    <input type="text" id="notes">
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <span>Парольник</span>
+            <button class="btn-submit">Добавить пароль</button>
+        </div>
+
+        <script src="popup.js"></script>
+    </body>
+</html>

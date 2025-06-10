@@ -37,18 +37,24 @@ public class PasswordEncryptExtension
         using (Aes aesAlg = Aes.Create())
         {
             aesAlg.Key = Encoding.UTF8.GetBytes(key);
-            byte[] iv = new byte[aesAlg.BlockSize / 8];
+            int ivLength = aesAlg.BlockSize / 8;
+
+            if (fullCipher.Length < ivLength)
+                throw new ArgumentException("Некорректная зашифрованная строка");
+
+            byte[] iv = new byte[ivLength];
             Array.Copy(fullCipher, 0, iv, 0, iv.Length);
             aesAlg.IV = iv;
 
-            int cipherStartIndex = iv.Length;
+            int cipherStartIndex = ivLength;
             int cipherLength = fullCipher.Length - cipherStartIndex;
 
             using (var msDecrypt = new MemoryStream(fullCipher, cipherStartIndex, cipherLength))
             using (var csDecrypt = new CryptoStream(msDecrypt, aesAlg.CreateDecryptor(), CryptoStreamMode.Read))
             using (var srDecrypt = new StreamReader(csDecrypt))
             {
-                return srDecrypt.ReadToEnd();
+                string decryptedText = srDecrypt.ReadToEnd();
+                return decryptedText;
             }
         }
     }

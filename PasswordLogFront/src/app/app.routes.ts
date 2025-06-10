@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { WelcomePageContentComponent } from './welcome-page-content/welcome-page-content.component';
 import { MainPageContentComponent } from './main-page-content/main-page-content.component';
 import { authGuard } from './guards/auth.guard';
+import { UserProfileComponent } from './user-profile/user-profile.component';
 
 export const routes: Routes = [
     { 

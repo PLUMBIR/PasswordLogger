@@ -8,6 +8,8 @@
 
         public string Avatar { get; set; }
 
+        public string Reminder { get; set; }
+
         public string Token { get; set; }
     }
 }

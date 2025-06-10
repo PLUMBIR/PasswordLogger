@@ -107,7 +107,6 @@ export interface PasswordFormGroup {
                                         (click)="passwordVisible$.set(!passwordVisible$())"
                                     />
                                 </ng-template>
-
                             </nz-form-item>
                         </div>
                     </div>
@@ -316,7 +315,7 @@ export class PasswordModalComponent implements OnInit {
                 sitePassword: data.password!,
                 notes: data.notes,
             };
-
+            
             if (card?.id) {
                 this.userService.updateCard(command as BaseCardModel).subscribe({
                     next: () => {

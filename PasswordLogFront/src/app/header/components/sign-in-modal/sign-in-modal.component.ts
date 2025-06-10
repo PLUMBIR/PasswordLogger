@@ -13,6 +13,7 @@ import { Observable, Observer } from 'rxjs';
 import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { SignUpModalComponent } from '../sign-up-modal/sign-up-modal.component';
 
 export interface SignInFormGroup {
   email: FormControl<string>;
@@ -42,7 +43,7 @@ export interface SignInFormGroup {
       <h1>Войти</h1>
       <p>
         или
-        <a href="">Зарегистрироваться</a>
+        <a (click)="openSignUpModal()">Зарегистрироваться</a>
       </p>
     </div>
     <nz-divider></nz-divider>
@@ -234,6 +235,7 @@ export class SignInModalComponent {
   router: Router = inject(Router);
   private nzmodalref = inject(NzModalRef);
   private fb = inject(NonNullableFormBuilder);
+  private signUpModalFactory = SignUpModalComponent.factory();
 
   constructor(
     private readonly authService: AuthService,
@@ -300,5 +302,10 @@ export class SignInModalComponent {
           this.message.error('Произошла ошибка при входе. Попробуйте позже.');
         }
     });
+  }
+
+  openSignUpModal() {
+    this.nzmodalref.close();
+    this.signUpModalFactory();
   }
 }

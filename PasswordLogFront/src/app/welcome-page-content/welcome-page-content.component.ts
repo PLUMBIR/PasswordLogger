@@ -6,6 +6,7 @@ import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzRateModule } from 'ng-zorro-antd/rate';
 import { HeaderComponent } from "../header/header.component";
 import { FooterComponent } from "../footer/footer.component";
+import { SignUpModalComponent } from '../header/components/sign-up-modal/sign-up-modal.component';
 
 @Component({
   selector: 'app-welcome-page-content',
@@ -22,5 +23,9 @@ import { FooterComponent } from "../footer/footer.component";
   styleUrl: './welcome-page-content.component.scss'
 })
 export class WelcomePageContentComponent {
-
+  private signUpModalFactory = SignUpModalComponent.factory();
+  
+  showModalSignUp(): void {
+    this.signUpModalFactory();
+  }
 }

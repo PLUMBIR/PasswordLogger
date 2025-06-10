@@ -24,7 +24,7 @@
             Name = name;
             Folder = folder;
             Username = username;
-            SitePassword = PasswordEncryptExtension.Encrypt(sitePassword);
+            SitePassword = sitePassword;
         }
     }
 }

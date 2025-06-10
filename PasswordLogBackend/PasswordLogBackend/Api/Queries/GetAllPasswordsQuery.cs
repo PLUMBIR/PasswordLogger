@@ -1,5 +1,6 @@
 ﻿using Mapster;
 using MediatR;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
 using PasswordLogBackend.Api.Common.Models.Dtos;
 
@@ -40,7 +41,9 @@ namespace PasswordLogBackend.Api.Queries
 
             foreach (var passwordDto in passwordDtos)
             {
-                passwordDto.SitePassword = PasswordEncryptExtension.Decrypt(passwordDto.SitePassword);
+                var bedore = passwordDto.SitePassword;
+                passwordDto.SitePassword = PasswordEncryptExtension.Decrypt(bedore);
+                var after = passwordDto.SitePassword;
             }
 
             return passwordDtos;

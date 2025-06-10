@@ -2,19 +2,7 @@
     <div class="logo">ПАРОЛЬНИК</div>
     <ul class="nav-left">
         <li class="nav-left-item">
-            <span>Продукция</span>
-            <nz-icon nzType="down" nzTheme="outline"/>
-        </li>
-        <li class="nav-left-item">
             <span>Функции</span>
-            <nz-icon nzType="down" nzTheme="outline" />
-        </li>
-        <li class="nav-left-item">
-            <span>Ценообразование</span>
-            <nz-icon nzType="down" nzTheme="outline" />
-        </li>
-        <li class="nav-left-item">
-            <span>Партнеры</span>
             <nz-icon nzType="down" nzTheme="outline" />
         </li>
         <li class="nav-left-item">
@@ -47,20 +35,8 @@
         <nz-dropdown-menu #menu="nzDropdownMenu">
             <ul nz-menu>
                 <li nz-menu-item class="dropdown-item">
-                    <nz-icon nzType="product" nzTheme="outline" />
-                    <span>Продукция</span>
-                </li>
-                <li nz-menu-item class="dropdown-item">
                     <nz-icon nzType="dashboard" nzTheme="outline" />
                     <span>Функции</span>
-                </li>
-                <li nz-menu-item class="dropdown-item">
-                    <nz-icon nzType="dollar" nzTheme="outline" />
-                    <span>Ценообразование</span>
-                </li>
-                <li nz-menu-item class="dropdown-item">
-                    <nz-icon nzType="usergroup-add" nzTheme="outline" />
-                    <span>Партнеры</span>
                 </li>
                 <li nz-menu-item class="dropdown-item">
                     <nz-icon nzType="heart" nzTheme="outline" />
@@ -70,7 +46,7 @@
                     <nz-icon nzType="comment" nzTheme="outline" />
                     <span>Контакты</span>
                 </li>
-                <li nz-menu-item class="dropdown-item dropdown-user">
+                <li nz-menu-item class="dropdown-item dropdown-user" (click)="showModalSignIn()">
                     <nz-icon nzType="user" nzTheme="outline" />
                     <span>Вход</span>
                 </li>
