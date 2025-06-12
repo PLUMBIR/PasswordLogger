@@ -42,7 +42,10 @@ namespace PasswordLogBackend.Api.Commands
             if (!result.Succeeded)
                 return false;
 
-            user.Reminder = request.Notes;
+            if (request.Notes is not null)
+            {
+                user.Reminder = request.Notes;
+            }
 
             var updateResult = await _userManager.UpdateAsync(user);
             if (!updateResult.Succeeded)

@@ -14,6 +14,7 @@ import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { SignUpModalComponent } from '../sign-up-modal/sign-up-modal.component';
+import { ResetPasswordComponent } from '../../../reset-password/reset-password.component';
 
 export interface SignInFormGroup {
   email: FormControl<string>;
@@ -85,7 +86,7 @@ export interface SignInFormGroup {
       <div class="modal-footer">
         <button class="modal-btn" [disabled]="this.form.invalid" (click)="onSubmit()">Войти</button>
         <div>
-          <a href="" class="forgot-password">Забыли пароль?</a>
+          <a class="forgot-password" (click)="openResetPasswordModal()">Забыли пароль?</a>
         </div>
       </div>
     </div>
@@ -236,6 +237,7 @@ export class SignInModalComponent {
   private nzmodalref = inject(NzModalRef);
   private fb = inject(NonNullableFormBuilder);
   private signUpModalFactory = SignUpModalComponent.factory();
+  private resetPasswordModalFactory = ResetPasswordComponent.factory();
 
   constructor(
     private readonly authService: AuthService,
@@ -307,5 +309,10 @@ export class SignInModalComponent {
   openSignUpModal() {
     this.nzmodalref.close();
     this.signUpModalFactory();
+  }
+
+  openResetPasswordModal() {
+    this.nzmodalref.close();
+    this.resetPasswordModalFactory();
   }
 }

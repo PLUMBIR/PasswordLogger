@@ -299,7 +299,6 @@ export class PasswordModalComponent implements OnInit {
 
     onSubmit() {
         const userId = this.authService.user$()?.id;
-        console.log("алеееееееееееееееееееееее")
         if (userId) {
             const data = this.formValues;
             const card = this.card$();

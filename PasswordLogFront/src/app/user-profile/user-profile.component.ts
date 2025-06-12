@@ -76,7 +76,7 @@ export class UserProfileComponent {
         localStorage.setItem('user', JSON.stringify(this.user));
       },
       (error) => {
-        console.error('При обновлении пароля произогла ошибка.');
+        this.message.error('При обновлении пароля произогла ошибка.');
       }
     );
   }

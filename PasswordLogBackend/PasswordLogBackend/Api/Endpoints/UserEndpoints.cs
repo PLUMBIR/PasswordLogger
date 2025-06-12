@@ -6,6 +6,8 @@ using PasswordLogBackend.Api.Common.Entities;
 using PasswordLogBackend.Api.Common.Extensions;
 using PasswordLogBackend.Api.Common.Models;
 using PasswordLogBackend.Api.Queries;
+using System.Net.Mail;
+using System.Net;
 
 namespace PasswordLogBackend.Api.Endpoints
 {
@@ -75,6 +77,32 @@ namespace PasswordLogBackend.Api.Endpoints
                     return Results.Ok(userDto);
                 else
                     return Results.BadRequest(new { message = "Не удалось обновить фотку" });
+            });
+
+            app.MapPost("user/send-reset-code", async (EmailModel request) =>
+            {
+                var email = request.Email;
+                var code = new Random().Next(100000, 999999).ToString();
+
+                using (var client = new SmtpClient("smtp.mail.ru"))
+                {
+                    client.Port = 587;
+                    client.Credentials = new NetworkCredential("passwordloggerggkttid@mail.ru", "SHYghKQjmAVUz8l3bBF1");
+                    client.EnableSsl = true;
+
+                    var mail = new MailMessage
+                    {
+                        From = new MailAddress("passwordloggerggkttid@mail.ru"),
+                        Subject = "Сброс пароля",
+                        Body = $"Ваш код сброса пароля: {code}",
+                        IsBodyHtml = false
+                    };
+                    mail.To.Add(email);
+
+                    await client.SendMailAsync(mail);
+                }
+
+                return Results.Ok(code);
             });
 
             app.MapGet("user/passwords/{userId}", async (IMediator mediator, string userId) =>
