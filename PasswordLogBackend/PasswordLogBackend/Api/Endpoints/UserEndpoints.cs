@@ -81,29 +81,16 @@ namespace PasswordLogBackend.Api.Endpoints
 
             app.MapPost("user/send-reset-code", async (EmailModel request) =>
             {
-                var email = request.Email;
-                var code = new Random().Next(100000, 999999).ToString();
-
-                using (var client = new SmtpClient("smtp.mail.ru"))
-                {
-                    client.Port = 587;
-                    client.Credentials = new NetworkCredential("passwordloggerggkttid@mail.ru", "SHYghKQjmAVUz8l3bBF1");
-                    client.EnableSsl = true;
-
-                    var mail = new MailMessage
-                    {
-                        From = new MailAddress("passwordloggerggkttid@mail.ru"),
-                        Subject = "Сброс пароля",
-                        Body = $"Ваш код сброса пароля: {code}",
-                        IsBodyHtml = false
-                    };
-                    mail.To.Add(email);
-
-                    await client.SendMailAsync(mail);
-                }
-
-                return Results.Ok(code);
+                await EmailSenderExtension.SendResetCodeAsync(request.Email);
+                return Results.Ok("Код отправлен.");
             });
+
+            app.MapPost("user/send-user-message", async (EmailModel request) =>
+            {
+                await EmailSenderExtension.SendUserMessageAsync(request);
+                return Results.Ok("Сообщение отправлено.");
+            });
+
 
             app.MapGet("user/passwords/{userId}", async (IMediator mediator, string userId) =>
             {

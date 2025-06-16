@@ -11,6 +11,7 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { SignUpModalComponent } from './components/sign-up-modal/sign-up-modal.component';
 import { SignInModalComponent } from './components/sign-in-modal/sign-in-modal.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -31,6 +32,8 @@ import { SignInModalComponent } from './components/sign-in-modal/sign-in-modal.c
 })
 
 export class HeaderComponent {
+  router: Router = inject(Router);
+
   private signUpModalFactory = SignUpModalComponent.factory();
   private signInModalFactory = SignInModalComponent.factory();
 
@@ -40,6 +43,10 @@ export class HeaderComponent {
 
   showModalSignIn(): void {
     this.signInModalFactory();
+  }
+
+  openSupportPage() {
+    this.router.navigate(['/support']);
   }
 }
 

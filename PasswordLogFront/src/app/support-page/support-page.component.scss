@@ -1,0 +1,111 @@
+.form-layout {
+    background-size: cover;
+    background-color: #000;
+    height: fit-content;
+}
+
+.form-layout-inner {
+    width: 50%;
+    height: 100%;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+
+    div {
+        width: 100%;
+        padding: 76px 48px 52px 0;
+        max-width: 556px;
+    }
+}
+
+h1, h2 {
+    color: #fff;
+    font-family: "Source Sans 3", sans-serif;
+}
+
+h1 {
+    font-size: 47px;
+    line-height: 52px;
+    letter-spacing: -1.04px;
+    font-weight: 500;
+}
+
+h2 {
+    font-size: 28px;
+    line-height: 52px;
+    letter-spacing: -1.04px;
+    font-weight: 500;
+}
+
+.form-layout-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+.form-layout-form {
+    min-width: 508px;
+    padding: 0 0 0 48px;
+
+    div {
+        width: 100%;
+        margin: 52px 0;
+        padding: 40px 52px;
+        max-width: 508px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0px 0px 1px 0px rgba(5, 6, 6, .17), 0px 4px 8px 0px rgba(5, 6, 6, .13);
+        position: relative;
+    }
+}
+
+.form-layout-wrapper-title {
+    padding: 52px 48px 52px 0;
+    max-width: 556px;
+    font-family: "Source Sans 3", sans-serif;
+    font-size: 20px;
+    line-height: 30px;
+    letter-spacing: -0.2px;
+}
+
+.form-title {
+    font-size: 26px;
+    letter-spacing: -.56px;
+    line-height: 36px;
+    font-weight: 600;
+}
+
+.form-item {
+    display: flex; 
+    flex-direction: column;
+    gap: 5px;
+}
+
+nz-form-control {
+    max-width: none;
+
+    input {
+        border-radius: 7px;
+    }
+}
+
+.btn-support {
+    margin-top: 60px;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    letter-spacing: -.2px;
+    line-height: 28px;
+    background: #d71340;
+    border: none;
+    border-radius: 8px;
+    box-sizing: border-box;
+    color: #fff;
+    cursor: pointer;
+    display: block;
+    min-height: 52px;
+    outline: none;
+    padding: 11px 40px;
+    text-align: center;
+    width: 100%;
+}

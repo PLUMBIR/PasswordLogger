@@ -1,0 +1,47 @@
+<app-header></app-header>
+    <div class="form-layout">
+        <div class="form-layout-inner">
+            <div>
+                <h2>Парольник</h2>
+                <h1>Улучшите безопасность паролей везде</h1>
+            </div>
+        </div>
+    </div>
+    <div class="form-layout-wrapper">
+        <div class="form-layout-wrapper-title">
+            Нужна помощь специалиста службы поддержки? Обратитесь в службу поддержки.
+        </div>
+        <div class="form-layout-form">
+            <div>
+                <span class="form-title">Связаться с поддержкой</span>
+                <form nz-form [formGroup]="form">
+                    <nz-form-item class="form-item">
+                        <span style="margin-top: 12px; font-size: 16px; font-weight: 700;">Имя</span>
+                        <nz-form-control [nzSpan]="14">
+                            <input nz-input name="name" type="text" formControlName="name" />
+                        </nz-form-control>
+                    </nz-form-item>
+                    <nz-form-item class="form-item">
+                        <span style="margin-top: 16px; font-size: 16px; font-weight: 700;">Адрес электронной почты</span>
+                        <nz-form-control [nzSpan]="14">
+                            <input nz-input name="email" type="email" formControlName="email" />
+                        </nz-form-control>
+                    </nz-form-item>
+                    <nz-form-item class="form-item">
+                        <span style="margin-top: 16px; font-size: 16px; font-weight: 700;">Номер телефона</span>
+                        <nz-form-control [nzSpan]="14">
+                            <input nz-input name="number" type="text" formControlName="number" />
+                        </nz-form-control>
+                    </nz-form-item>
+                    <nz-form-item class="form-item">
+                        <span style="margin-top: 16px; font-size: 16px; font-weight: 700;">Есть вопросы?</span>
+                        <nz-form-control [nzSpan]="14">
+                            <input nz-input name="offers" type="text" formControlName="offers"  />
+                        </nz-form-control>
+                    </nz-form-item>
+                </form>
+                <button class="btn-support" (click)="sendSupportMessage()">Связаться с поддержкой</button>
+            </div>
+        </div>
+    </div>
+<app-footer></app-footer>
