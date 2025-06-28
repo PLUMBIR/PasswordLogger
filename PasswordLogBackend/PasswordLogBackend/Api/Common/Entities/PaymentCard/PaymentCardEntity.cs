@@ -26,7 +26,6 @@ namespace PasswordLogBackend.Api.Common.Entities.PaymentCard
 
         public PaymentCardEntity(
         string name,
-        string folder,
         string nameOnCard,
         long number,
         int securityCode,
@@ -34,7 +33,6 @@ namespace PasswordLogBackend.Api.Common.Entities.PaymentCard
         string expirationDate)
         {
             Name = name;
-            Folder = folder;
             NameOnCard = nameOnCard;
             Number = number;
             SecurityCode = securityCode;

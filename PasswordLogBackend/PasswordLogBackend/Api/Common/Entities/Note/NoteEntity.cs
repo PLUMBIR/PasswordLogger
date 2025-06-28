@@ -12,10 +12,9 @@
         {
         }
 
-        public NoteEntity(string name, string folder, string text)
+        public NoteEntity(string name, string text)
         {
             Name = name;
-            Folder = folder;
             Text = text;
         }
     }

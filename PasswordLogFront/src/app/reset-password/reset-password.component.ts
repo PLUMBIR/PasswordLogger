@@ -54,7 +54,14 @@ export class ResetPasswordComponent {
   });
 
   passwordForm = new FormGroup({
-    password: this.fb.control<string>('', [Validators.required, Validators.minLength(8)]),
+    password: this.fb.control<string>('', [
+      Validators.required,
+      this.minLengthValidator(10),
+      this.uppercaseValidator(),
+      this.lowercaseValidator(),
+      this.digitValidator(),
+      this.specialCharValidator()
+    ]),
     confirmPassword: this.fb.control<string>('', [Validators.required, this.confirmValidator()]),
   });
 
@@ -69,20 +76,56 @@ export class ResetPasswordComponent {
     };
   }
 
+  minLengthValidator(minLength: number): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value || '';
+      return value.length >= minLength ? null : { minLength: { requiredLength: minLength } };
+    };
+  }
+
+  uppercaseValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      return /[A-Z]/.test(control.value) ? null : { uppercase: true };
+    };
+  }
+
+  lowercaseValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      return /[a-z]/.test(control.value) ? null : { lowercase: true };
+    };
+  }
+
+  digitValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      return /\d/.test(control.value) ? null : { digit: true };
+    };
+  }
+
+  specialCharValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      return /[!@#$%^&*()[\]{}\-_=+\\|;:'",.<>?/]/.test(control.value) ? null : { specialChar: true };
+    };
+  }
+
   submitEmail() {
     if (this.emailForm.invalid) {
       this.message.error('Пожалуйста, введите корректный email');
       return;
     }
+    
     const email = this.emailForm.value.email!;
-    this.http.post(`${API_URL}/user/send-reset-code`, { email } ).subscribe(
+    this.http.post(`${API_URL}/user/send-reset-code`, { email }).subscribe(
       (res) => {
         this.verificationCode = res.toString();
         this.email = email;
         this.currentStep = 2;
       },
-      () => {
-        this.message.error('Ошибка при отправке кода. Попробуйте еще раз.');
+      (error) => {
+        if (error.status === 400) {
+          this.message.error('Email не найден.');
+        } else {
+          this.message.error('Ошибка при отправке кода. Попробуйте еще раз.');
+        }
       }
     );
   }
@@ -92,6 +135,7 @@ export class ResetPasswordComponent {
       this.message.error('Пожалуйста, введите код');
       return;
     }
+    console.log(this.verificationCode);
     const code = this.codeForm.value.code!;
     if (code === this.verificationCode) {
       this.currentStep = 3;

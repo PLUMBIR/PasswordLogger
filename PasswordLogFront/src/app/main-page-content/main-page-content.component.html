@@ -164,27 +164,22 @@
         <div style="margin: 0 48px;">
             <nz-divider style="margin-bottom: 12px;"></nz-divider>
         </div>
-        <div class="cards">
+        @if ((filteredCards$().length) > 0) {
+          <div class="cards">
             @for (itemCard of filteredCards$(); track itemCard.id) {
               @switch (itemCard.type) {
                 @case ('password') {
                   <password-card [card]="itemCard" (onDeleteCard)="onDeleteCard($event)" (onEditCard)="onEditCard($event)"></password-card>
                 }
-                @case ('note') {
-                  <other-card [card]="itemCard" (onDeleteCard)="onDeleteCard($event)" (onEditCard)="onEditCard($event)"></other-card>
-                }
-                @case ('address') {
-                  <other-card [card]="itemCard" (onDeleteCard)="onDeleteCard($event)" (onEditCard)="onEditCard($event)"></other-card>
-                }
-                @case ('creditCard') {
-                  <other-card [card]="itemCard" (onDeleteCard)="onDeleteCard($event)" (onEditCard)="onEditCard($event)"></other-card>
-                }
-                @case ('bankAccount') {
+                @default {
                   <other-card [card]="itemCard" (onDeleteCard)="onDeleteCard($event)" (onEditCard)="onEditCard($event)"></other-card>
                 }
               }
             }
-        </div>
+          </div>
+        } @else {
+          <nz-empty [nzNotFoundContent]="null"></nz-empty>
+        }
         <nz-float-button style="height: 55px; width: 55px; right: 60px;" [nzIcon]="icon" (nzOnClick)="showAllItemsModal()"></nz-float-button>
         <ng-template #icon>
             <nz-icon nzType="plus" nzTheme="outline" style="color: #fff;"></nz-icon>

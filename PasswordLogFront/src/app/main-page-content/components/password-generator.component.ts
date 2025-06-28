@@ -64,7 +64,11 @@ import { NzProgressModule } from 'ng-zorro-antd/progress';
 
       <div class="strength-text">{{strengthText$()}}</div>
 
-      <nz-progress [nzPercent]="50" [nzShowInfo]="false"></nz-progress>
+      <nz-progress 
+        [nzPercent]="passwordStrength$()"
+        [nzStrokeColor]="passwordColor$()"
+        [nzShowInfo]="false">
+      </nz-progress>
 
       <div class="password-options">
         <div class="option-item">
@@ -195,6 +199,8 @@ export class PasswordGeneratorModalComponent {
     lowercaseCheck$ = signal<boolean>(true);
     numbersCheck$ = signal<boolean>(true);
     symbolsCheck$ = signal<boolean>(true);
+    passwordStrength$ = signal<number>(0);
+    passwordColor$ = signal<'red' | 'orange' | 'yellow' | 'green'>('red');
 
     constructor(
         private readonly userService: UserService,
@@ -224,9 +230,45 @@ export class PasswordGeneratorModalComponent {
         this.userService.generatePassword(command).subscribe({
             next: (result) => {
                 this.passwordText$.set(result as string);
+                this.checkPasswordStrength(result as string);
             }
         });
     }
+
+    checkPasswordStrength(password: string): void {
+        const length = password.length;
+        const hasUpper = /[A-Z]/.test(password);
+        const hasLower = /[a-z]/.test(password);
+        const hasNumber = /\d/.test(password);
+        const hasSymbol = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+        if (length < 6) {
+            this.passwordStrength$.set(25);
+            this.passwordColor$.set('red');
+            return;
+        }
+
+        let strength = 0;
+        if (hasUpper) strength += 1;
+        if (hasLower) strength += 1;
+        if (hasNumber) strength += 1;
+        if (hasSymbol) strength += 1;
+
+        if (length >= 10 && strength >= 3) {
+            this.passwordStrength$.set(100);
+            this.passwordColor$.set('green');
+        } else if (length >= 8 && strength >= 3) {
+            this.passwordStrength$.set(75);
+            this.passwordColor$.set('yellow');
+        } else if (length >= 6 && strength >= 2) {
+            this.passwordStrength$.set(50);
+            this.passwordColor$.set('orange');
+        } else {
+            this.passwordStrength$.set(25);
+            this.passwordColor$.set('red');
+        }
+    }
+
 
     static factory() {
         const nzModalService = inject(NzModalService);

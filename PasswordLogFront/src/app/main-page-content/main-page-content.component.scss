@@ -193,3 +193,12 @@
 ::ng-deep .ant-float-btn-default .ant-float-btn-body:hover {
     background-color: #a02727;
 }
+
+nz-empty {
+    height: 100%;
+    max-height: 750px; 
+}
+
+::ng-deep .ant-empty-image {
+    height: 100%;
+}

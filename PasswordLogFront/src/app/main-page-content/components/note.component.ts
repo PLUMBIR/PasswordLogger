@@ -50,13 +50,13 @@ export interface NoteFormGroup {
         </div>
         <div class="modal-content">
             <div class="modal-content-inputs">
-                <form nz-form [formGroup]="form" (ngSubmit)="onSubmit()">
+                <form nz-form [formGroup]="form">
                     <div class="note-modal">
                         <div class="left-content">
                             <div class="input-item">
                                 <span>Имя:</span>
                                 <nz-form-item>
-                                    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Пожалуйста, введите имя">
+                                    <nz-form-control nzErrorTip="Пожалуйста, введите имя">
                                         <input nz-input id="name" formControlName="name" placeholder="Имя" />
                                     </nz-form-control>
                                 </nz-form-item>
@@ -64,7 +64,7 @@ export interface NoteFormGroup {
                             <div class="input-item">
                                 <span>Папка:</span>
                                 <nz-form-item>
-                                    <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Пожалуйста, укажите папку">
+                                    <nz-form-control nzErrorTip="Пожалуйста, укажите папку">
                                         <input nz-input id="folder" formControlName="folder" placeholder="Папка" />
                                     </nz-form-control>
                                 </nz-form-item>
@@ -87,7 +87,7 @@ export interface NoteFormGroup {
             <button class="cancel-btn" (click)="closeModal()">
                 Отмена
             </button>
-            <button class="submit-btn" [disabled]="this.form.invalid" (click)="onSubmit()">
+            <button class="submit-btn" (click)="onSubmit()">
                 Сохранить
             </button>
         </div>
@@ -239,7 +239,7 @@ export class NoteModalComponent implements OnInit{
 
     form = new FormGroup<NoteFormGroup>({
         name: this.fb.control<string>('', [Validators.required]),
-        folder: this.fb.control<string>('', [Validators.required]),
+        folder: this.fb.control<string>('', []),
         text: this.fb.control<string>('', [Validators.required])
     });
 
@@ -267,6 +267,16 @@ export class NoteModalComponent implements OnInit{
     }
 
     onSubmit() {
+        Object.values(this.form.controls).forEach(control => {
+            control.markAsDirty();
+            control.markAsTouched();
+            control.updateValueAndValidity();
+        });
+
+        if (this.form.invalid) {
+            return;
+        }
+
         const userId = this.authService.user$()?.id;
 
         if (userId) {

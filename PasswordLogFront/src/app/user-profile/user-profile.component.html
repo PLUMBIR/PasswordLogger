@@ -16,8 +16,8 @@
         <div class="password-title">
             <span class="password-title-span">Мастер пароль:</span>
             <nz-form-item>
-                <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Пожалуйста, введите пароль">
-                    <nz-input-group [nzSuffix]="suffixTemplate">
+                <nz-form-control nzHasFeedback nzErrorTip="Пожалуйста, введите пароль" [nzErrorTip]="passwordErrorTpl">
+                    <nz-input-group [nzSuffix]="suffixTemplatePassword">
                         <input
                             [type]="passwordVisible$() ? 'text' : 'password'"
                             nz-input
@@ -25,10 +25,30 @@
                             formControlName="password"
                             placeholder="Пароль"
                         />
+                        <ng-template #passwordErrorTpl let-control>
+                            @if (control.errors?.['required']) {
+                                Пожалуйста введите мастер пароль!
+                            }
+                            @else if (control.errors?.['minLength']) {
+                                Пароль должен быть не короче {{ control.errors['minLength'].requiredLength }} символов.
+                            }
+                            @else if (control.errors?.['uppercase']) {
+                                Пароль должен содержать хотя бы одну заглавную букву.
+                            }
+                            @else if (control.errors?.['lowercase']) {
+                                Пароль должен содержать хотя бы одну строчную букву.
+                            }
+                            @else if (control.errors?.['digit']) {
+                                Пароль должен содержать хотя бы одну цифру.
+                            }
+                            @else if (control.errors?.['specialChar']) {
+                                Пароль должен содержать хотя бы один специальный символ.
+                            }
+                        </ng-template>
                     </nz-input-group>
                 </nz-form-control>
 
-                <ng-template #suffixTemplate>
+                <ng-template #suffixTemplatePassword>
                     <nz-icon
                         class="ant-input-password-icon"
                         [nzType]="passwordVisible$() ? 'eye-invisible' : 'eye'"
@@ -40,7 +60,7 @@
         <div class="note-title">
             <span class="password-title-span">Примечания к паролю:</span>
             <nz-form-item style="margin-bottom: 0px;">
-                <nz-form-control [nzSpan]="12" nzHasFeedback>
+                <nz-form-control [nzSpan]="12">
                     <nz-textarea-count [nzMaxCharacterCount]="200">
                         <textarea formControlName="notes" nz-input rows="2"></textarea>
                     </nz-textarea-count>

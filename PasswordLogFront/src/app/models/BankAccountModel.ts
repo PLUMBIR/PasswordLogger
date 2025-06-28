@@ -1,7 +1,7 @@
 export interface BankAccountModel {
   userId: string;
   name: string;
-  folder: string;
+  folder?: string;
   bankName: string; 
   accountNumber: string;
   SWIFTCode?: string;

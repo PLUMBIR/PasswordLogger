@@ -1,5 +1,5 @@
 <nz-header>
-    <div class="logo">ПАРОЛЬНИК</div>
+    <div class="logo" (click)="openWelcomePage()">ПАРОЛЬНИК</div>
     <ul class="nav-left">
         <li class="nav-left-item">
             <span>Функции</span>
@@ -16,12 +16,24 @@
                 Регистрация
             </button>
         </li>
-        <li class="nav-right-item">
+        <li class="nav-right-item" nz-dropdown [nzDropdownMenu]="menucontacts">
             <button class="contacts-btn">
                 <nz-icon class="comment-icon" nzType="comment" nzTheme="outline" />
                 <span>Контакты</span>
                 <nz-icon class="down-icon" nzType="down" nzTheme="outline" />
             </button>
+            <nz-dropdown-menu #menucontacts="nzDropdownMenu">
+                <ul nz-menu class="dropdown-menu">
+                    <li nz-menu-item class="dropdown-contact-item" (click)="copyToClipboard('passwordloggerggkttid@mail.ru')">
+                        <nz-icon style="margin-right: 5px;" nzType="wechat-work" nzTheme="outline" />
+                        <span>passwordloggerggkttid&#64;mail.ru</span>
+                    </li>
+                    <li nz-menu-item class="dropdown-contact-item" (click)="copyToClipboard('+375 (33) 621-10-10')">
+                        <nz-icon style="margin-right: 5px;" nzType="phone" nzTheme="outline" />
+                        <span>+375 (33) 621-10-10</span>
+                    </li>
+                </ul>
+            </nz-dropdown-menu>
         </li>
         <li class="nav-right-item">
             <button class="signin-btn" (click)="showModalSignIn()">
@@ -38,7 +50,7 @@
                     <nz-icon nzType="dashboard" nzTheme="outline" />
                     <span>Функции</span>
                 </li>
-                <li nz-menu-item class="dropdown-item">
+                <li nz-menu-item class="dropdown-item" (click)="openSupportPage()">
                     <nz-icon nzType="heart" nzTheme="outline" />
                     <span>Поддержка</span>
                 </li>

@@ -12,22 +12,46 @@ namespace PasswordLogBackend.Api.Common.Extensions
 
         public static string GeneratePassword(PasswordGeneratorModel request)
         {
+            var random = new Random();
+            var requiredChars = new List<char>();
             var charPool = new StringBuilder();
 
-            if (request.IncludeUppercase) charPool.Append(UppercaseLetters);
-            if (request.IncludeLowercase) charPool.Append(LowercaseLetters);
-            if (request.IncludeNumbers) charPool.Append(Numbers);
-            if (request.IncludeSymbols) charPool.Append(Symbols);
+            if (request.IncludeUppercase)
+            {
+                charPool.Append(UppercaseLetters);
+                requiredChars.Add(UppercaseLetters[random.Next(UppercaseLetters.Length)]);
+            }
 
-            return GenerateRandomPassword(request.Length, charPool.ToString());
+            if (request.IncludeLowercase)
+            {
+                charPool.Append(LowercaseLetters);
+                requiredChars.Add(LowercaseLetters[random.Next(LowercaseLetters.Length)]);
+            }
+
+            if (request.IncludeNumbers)
+            {
+                charPool.Append(Numbers);
+                requiredChars.Add(Numbers[random.Next(Numbers.Length)]);
+            }
+
+            if (request.IncludeSymbols)
+            {
+                charPool.Append(Symbols);
+                requiredChars.Add(Symbols[random.Next(Symbols.Length)]);
+            }
+
+            var allChars = charPool.ToString();
+            var remainingLength = request.Length - requiredChars.Count;
+
+            var passwordChars = new List<char>(requiredChars);
+
+            for (int i = 0; i < remainingLength; i++)
+            {
+                passwordChars.Add(allChars[random.Next(allChars.Length)]);
+            }
+
+            return new string(passwordChars.OrderBy(_ => random.Next()).ToArray());
         }
 
-        private static string GenerateRandomPassword(int length, string charPool)
-        {
-            var random = new Random();
-            return new string(Enumerable.Range(0, length)
-                .Select(_ => charPool[random.Next(charPool.Length)])
-                .ToArray());
-        }
     }
 }

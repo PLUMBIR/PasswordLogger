@@ -29,6 +29,7 @@ import { PasswordGeneratorModalComponent } from './components/password-generator
 import { CardStoreService } from '../services/card.service';
 import { Router } from '@angular/router';
 import { UserProfileComponent } from '../user-profile/user-profile.component';
+import { NzEmptyModule } from 'ng-zorro-antd/empty';
 
 @Component({
   selector: 'app-main-page-content',
@@ -46,7 +47,8 @@ import { UserProfileComponent } from '../user-profile/user-profile.component';
     PasswordCardComponent,
     OtherCardComponent,
     FormsModule,
-    NzDropDownModule 
+    NzDropDownModule,
+    NzEmptyModule
 ],
   templateUrl: './main-page-content.component.html',
   styleUrl: './main-page-content.component.scss'

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { NzModalModule, NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
 import { AbstractControl, FormControl, FormGroup, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -13,6 +13,8 @@ import { Observable, Observer } from 'rxjs';
 import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
 import { SignInModalComponent } from '../sign-in-modal/sign-in-modal.component';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { UserService } from '../../../services/user.service';
 
 export interface SignUpFormGroup {
   email: FormControl<string>;
@@ -53,19 +55,82 @@ export interface SignUpFormGroup {
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-control nzHasFeedback nzErrorTip="Пожалуйста введите мастер пароль!">
-          <input nz-input type="password" formControlName="password" placeholder="Мастер пароль" />
+        <nz-form-control
+          nzHasFeedback
+          nzErrorTip="Пожалуйста введите мастер пароль!"
+          [nzErrorTip]="passwordErrorTpl"
+        >
+          <nz-input-group [nzSuffix]="suffixTemplatePassword">
+            <input
+              [type]="passwordVisible$() ? 'text' : 'password'"
+              nz-input
+              id="password"
+              formControlName="password"
+              placeholder="Мастер пароль"
+            />
+            <ng-template #passwordErrorTpl let-control>
+              @if (control.errors?.['required']) {
+                Пожалуйста введите мастер пароль!
+              }
+              @else if (control.errors?.['minLength']) {
+                Пароль должен быть не короче {{ control.errors['minLength'].requiredLength }} символов.
+              }
+              @else if (control.errors?.['uppercase']) {
+                Пароль должен содержать хотя бы одну заглавную букву.
+              }
+              @else if (control.errors?.['lowercase']) {
+                Пароль должен содержать хотя бы одну строчную букву.
+              }
+              @else if (control.errors?.['digit']) {
+                Пароль должен содержать хотя бы одну цифру.
+              }
+              @else if (control.errors?.['specialChar']) {
+                Пароль должен содержать хотя бы один специальный символ.
+              }
+            </ng-template>
+          </nz-input-group>
         </nz-form-control>
+
+        <ng-template #suffixTemplatePassword>
+          <nz-icon
+            class="ant-input-password-icon"
+            [nzType]="passwordVisible$() ? 'eye-invisible' : 'eye'"
+            (click)="passwordVisible$.set(!passwordVisible$())"
+          ></nz-icon>
+          <nz-icon
+            class="ant-input-password-icon"
+            nzType="lock"
+            (click)="onGeneratePassword()"
+            style="margin-left: 8px; cursor: pointer;"
+          ></nz-icon>
+        </ng-template>
+
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-control nzHasFeedback [nzErrorTip]="passwordErrorTpl">
-          <input nz-input type="password" formControlName="confirm" placeholder="Подтвердите ваш мастер пароль" />
-          <ng-template #passwordErrorTpl let-control>
-            @if (control.errors?.['required']) { Пожалуйста подтвердите мастер пароль! }
-            @if (control.errors?.['confirm']) { Пароли не совпадают! }
-          </ng-template>
+        <nz-form-control nzHasFeedback [nzErrorTip]="passwordErrorConfirmTpl">
+            <nz-input-group [nzSuffix]="suffixTemplate">
+                <input
+                    [type]="passwordConfirmVisible$() ? 'text' : 'password'"
+                    nz-input
+                    formControlName="confirm"
+                    id="confirmPassword"
+                    placeholder="Подтвердите ваш мастер пароль"
+                />
+                <ng-template #passwordErrorConfirmTpl let-control>
+                  @if (control.errors?.['required']) { Пожалуйста подтвердите мастер пароль! }
+                  @if (control.errors?.['confirm']) { Пароли не совпадают! }
+                </ng-template>
+            </nz-input-group>
         </nz-form-control>
+
+        <ng-template #suffixTemplate>
+            <nz-icon
+                class="ant-input-password-icon"
+                [nzType]="passwordConfirmVisible$() ? 'eye-invisible' : 'eye'"
+                (click)="passwordConfirmVisible$.set(!passwordConfirmVisible$())"
+            />
+        </ng-template>
       </nz-form-item>
 
       <nz-form-item class="last-form-item">
@@ -76,7 +141,7 @@ export interface SignUpFormGroup {
     </form>
 
     <div *nzModalFooter>
-      <button class="modal-btn" [disabled]="this.form.invalid" (click)="onSubmit()">Зарегистрироваться</button>
+      <button class="modal-btn" (click)="onSubmit()">Зарегистрироваться</button>
     </div>
   `,
   styles: [
@@ -157,6 +222,19 @@ export interface SignUpFormGroup {
         font-family: 'Gibson', 'Open Sans', 'Helvetica', Arial, sans-serif;
         font-size: 16px;
       }
+
+      nz-input-group {
+        width: 100%;
+        height: 50px;
+        border: solid 1px #c3cbcb;
+        border-radius: 5px;
+        font-family: 'Gibson', 'Open Sans', 'Helvetica', Arial, sans-serif;
+        font-size: 16px;
+
+        input {
+          height: 40px;
+        }
+      }
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -166,12 +244,25 @@ export class SignUpModalComponent {
   private nzmodalref = inject(NzModalRef);
   private fb = inject(NonNullableFormBuilder);
   private signInModalFactory = SignInModalComponent.factory();
+  passwordVisible$ = signal<boolean>(false);
+  passwordConfirmVisible$ = signal<boolean>(false);
 
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService : UserService,
+    private message: NzMessageService
+  ) {}
 
   form = new FormGroup<SignUpFormGroup>({
     email: this.fb.control<string>('', [Validators.email, Validators.required], [this.emailAsyncValidator]),
-    password: this.fb.control<string>('', [Validators.required]),
+    password: this.fb.control<string>('', [
+      Validators.required,
+      this.minLengthValidator(10),
+      this.uppercaseValidator(),
+      this.lowercaseValidator(),
+      this.digitValidator(),
+      this.specialCharValidator()
+    ]),
     confirm: this.fb.control<string>('', [this.confirmValidator()]),
     reminder: this.fb.control<string>(''),
   });
@@ -200,6 +291,56 @@ export class SignUpModalComponent {
     };
   }
 
+  minLengthValidator(minLength: number): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value || '';
+      return value.length >= minLength ? null : { minLength: { requiredLength: minLength } };
+    };
+  }
+
+  uppercaseValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      return /[A-Z]/.test(control.value) ? null : { uppercase: true };
+    };
+  }
+
+  lowercaseValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      return /[a-z]/.test(control.value) ? null : { lowercase: true };
+    };
+  }
+
+  digitValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      return /\d/.test(control.value) ? null : { digit: true };
+    };
+  }
+
+  specialCharValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      return /[!@#$%^&*()[\]{}\-_=+\\|;:'",.<>?/]/.test(control.value) ? null : { specialChar: true };
+    };
+  }
+
+  onGeneratePassword(): void {
+    const command = {
+      length: 10,
+      includeUppercase: true,
+      includeLowercase: true,
+      includeNumbers: true,
+      includeSymbols: true
+    };
+
+    this.userService.generatePassword(command).subscribe({
+      next: (result) => {
+        this.form.get('password')?.setValue(result.toString());
+        this.form.get('password')?.markAsDirty();
+        this.form.get('password')?.markAsTouched();
+        this.form.get('password')?.updateValueAndValidity();
+      }
+    });
+  }
+
   static factory() {
     const nzModalService = inject(NzModalService);
 
@@ -214,6 +355,16 @@ export class SignUpModalComponent {
   }
 
   onSubmit() {
+    Object.values(this.form.controls).forEach(control => {
+      control.markAsDirty();
+      control.markAsTouched();
+      control.updateValueAndValidity();
+    });
+
+    if (this.form.invalid) {
+        return;
+    }
+
     const data = this.formValues;
 
     const command = {
@@ -222,10 +373,18 @@ export class SignUpModalComponent {
       reminder: data.reminder!,
     };
 
-    this.authService.signUp(command).subscribe((result) => {
-      if (result) {
+    this.authService.signUp(command).subscribe({
+      next: (result) => {
         this.nzmodalref.close();
+        this.message.success('Вы успешно зарегистрировались.');
         this.router.navigate(['/profile']);
+      },
+      error: (error) => {
+        if (error.status === 400) {
+          this.message.error('На данный email уже создан аккаунт.');
+        } else {
+          this.message.error('Произошла ошибка при регистрации. Попробуйте позже.');
+        }
       }
     });
   }

@@ -3,12 +3,15 @@ import { NzIconModule } from "ng-zorro-antd/icon";
 import { BaseCardModel, CardType } from "../../../models/Cards/BaseCardModel";
 import { iconDictionary } from "../../../constants/photos";
 import { pastelColors } from "../../../constants/colors";
+import { NzDropDownModule } from "ng-zorro-antd/dropdown";
+import { NzMessageService } from "ng-zorro-antd/message";
 
 @Component({
   selector: 'password-card',
   standalone: true,
   imports: [
-    NzIconModule
+    NzIconModule,
+    NzDropDownModule
   ],
   template: `
     <div class="card">
@@ -33,8 +36,19 @@ import { pastelColors } from "../../../constants/colors";
                     <p>{{card().name}}</p>
                     <div class="item-info-buttons">
                         <nz-icon nzType="edit" nzTheme="outline" (click)="onEditCard.emit({ id: card().id, type: 'password' })"/>
-                        <!-- <nz-icon nzType="usergroup-add" nzTheme="outline" /> -->
                         <nz-icon nzType="delete" nzTheme="outline" (click)="onDeleteCard.emit({ id: card().id, type: 'password' })"/>
+                        <nz-icon nzType="more" nzTheme="outline" nz-dropdown nzTrigger="click" [nzDropdownMenu]="menu"/>
+                        <nz-dropdown-menu #menu="nzDropdownMenu">
+                          <ul nz-menu>
+                            <li nz-menu-item (click)="copyUserName()">
+                              <nz-icon nzType="user" nzTheme="outline" />
+                              Скопировать логин
+                            </li>
+                            <li nz-menu-item (click)="copySitePassword()">
+                              <nz-icon nzType="lock" nzTheme="outline" />
+                              Скопировать пароль</li>
+                          </ul>
+                        </nz-dropdown-menu>
                     </div>
                 </div>
                 <p>{{card().username}}</p>
@@ -137,6 +151,10 @@ import { pastelColors } from "../../../constants/colors";
 export class PasswordCardComponent {
   card = input.required<BaseCardModel>();
 
+  constructor(
+      private message: NzMessageService
+  ) {}
+
   imageSource = computed(() => {
     const key = Object.keys(iconDictionary).find(k => this.card().name?.includes(k));
     return key ? iconDictionary[key] : null;
@@ -152,5 +170,25 @@ export class PasswordCardComponent {
 
   openUrl(url: string) {
     window.open(url, '_blank');
+  }
+
+  copyUserName(): void {
+    const username = this.card().username;
+    if (username) {
+      navigator.clipboard.writeText(username).then(
+        () => this.message.success('Логин скопирован!'),
+        () => this.message.error('Не удалось скопировать логин.')
+      );
+    }
+  }
+
+  copySitePassword(): void {
+    const password = this.card().sitePassword;
+    if (password) {
+      navigator.clipboard.writeText(password).then(
+        () => this.message.success('Пароль скопирован!'),
+        () => this.message.error('Не удалось скопировать пароль.')
+      );
+    }
   }
 }

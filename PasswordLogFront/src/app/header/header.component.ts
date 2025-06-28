@@ -12,6 +12,7 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
 import { SignUpModalComponent } from './components/sign-up-modal/sign-up-modal.component';
 import { SignInModalComponent } from './components/sign-in-modal/sign-in-modal.component';
 import { Router } from '@angular/router';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Component({
   selector: 'app-header',
@@ -37,6 +38,10 @@ export class HeaderComponent {
   private signUpModalFactory = SignUpModalComponent.factory();
   private signInModalFactory = SignInModalComponent.factory();
 
+  constructor(
+    private message: NzMessageService
+  ) {}
+
   showModalSignUp(): void {
     this.signUpModalFactory();
   }
@@ -47,6 +52,21 @@ export class HeaderComponent {
 
   openSupportPage() {
     this.router.navigate(['/support']);
+  }
+
+  openWelcomePage() {
+    this.router.navigate(['']);
+  }
+
+  copyToClipboard(value: string): void {
+    navigator.clipboard.writeText(value).then(
+      () => {
+        this.message.success('Скопировано в буфер обмена!');
+      },
+      () => {
+        this.message.error('Не удалось скопировать.');
+      }
+    );
   }
 }
 

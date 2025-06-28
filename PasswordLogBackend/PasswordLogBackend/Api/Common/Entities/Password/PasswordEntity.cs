@@ -18,11 +18,10 @@
         {
         }
 
-        public PasswordEntity(string url, string name, string folder, string username, string sitePassword)
+        public PasswordEntity(string url, string name, string username, string sitePassword)
         {
             Url = url;
             Name = name;
-            Folder = folder;
             Username = username;
             SitePassword = sitePassword;
         }

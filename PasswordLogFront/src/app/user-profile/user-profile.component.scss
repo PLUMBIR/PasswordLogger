@@ -5,7 +5,7 @@
 
 .left-part {
     max-width: 220px;
-    background: linear-gradient(to right, #ee5a6f, #f29263);
+    background: #f0ece4;
 }
 
 .avatar {
@@ -67,16 +67,22 @@ nz-textarea-count {
 .changePassword-btn {
     padding: 3px 15px;
     font-size: 16px;
+    font-family: Inter, system-ui;
+    font-weight: 550;
     border: 1px solid rgb(214, 214, 214);
     border-radius: 5px;
-    background: linear-gradient(to right, #ee5a6f, #f29263);
+    background: #d71340;
     color: #fff;
     cursor: pointer;
 }
 
+.changePassword-btn:hover {
+    background: #af1136;
+}
+
 .button-styles{
     color: #fff;
-    background: #806cf5;
+    background: #d71340;
     width: 180px;
     height: 38px;
     font-size: 14px;
@@ -91,5 +97,5 @@ nz-textarea-count {
 }
 
 .button-styles:hover{
-    background: #9683ff;
+    background: #af1136;
 }

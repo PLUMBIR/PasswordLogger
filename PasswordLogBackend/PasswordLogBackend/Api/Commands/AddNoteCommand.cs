@@ -42,7 +42,7 @@ namespace PasswordLogBackend.Api.Commands
                 throw new NotFoundException($"Пользователь с {command.UserId} не найден.");
             }
 
-            user.AddNoteItem(new NoteEntity(command.Name, command.Folder, command.Text));
+            user.AddNoteItem(new NoteEntity(command.Name, command.Text) { Folder = command.Folder });
 
             await _dbContext.SaveChangesAsync();
 

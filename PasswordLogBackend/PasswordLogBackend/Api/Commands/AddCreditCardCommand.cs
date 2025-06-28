@@ -58,15 +58,14 @@ namespace PasswordLogBackend.Api.Commands
             }
 
             user.AddCreditCardItem(new PaymentCardEntity(
-                command.Name, 
-                command.Folder, 
+                command.Name,  
                 command.NameOnCard, 
                 command.Number, 
                 command.SecurityCode, 
                 command.StartDate, 
                 command.ExpirationDate
                 ) 
-            { Notes = command.Notes });
+            { Folder = command.Folder, Notes = command.Notes });
 
             await _dbContext.SaveChangesAsync();
 

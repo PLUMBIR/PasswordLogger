@@ -1,6 +1,6 @@
 import { UserService } from './../services/user.service';
 import { Component, inject, signal } from '@angular/core';
-import { FormGroup, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormGroup, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzFormModule } from 'ng-zorro-antd/form';
@@ -8,7 +8,7 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
-import { NzUploadChangeParam, NzUploadModule } from 'ng-zorro-antd/upload';
+import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { AuthService } from '../services/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { API_URL } from '../constants/URL';
@@ -36,7 +36,7 @@ export class UserProfileComponent {
 
   user = this.authService.user$();
   passwordVisible$ = signal<boolean>(false);
-  selectedImage$ = signal<string>("anton.jpg");
+  selectedImage$ = signal<string>('');
 
   constructor(
     private message: NzMessageService,
@@ -44,7 +44,14 @@ export class UserProfileComponent {
   ) {}
 
   form = new FormGroup({
-    password: this.fb.control<string>('', [Validators.required]),
+    password: this.fb.control<string>('', [
+      Validators.required,
+      this.minLengthValidator(10),
+      this.uppercaseValidator(),
+      this.lowercaseValidator(),
+      this.digitValidator(),
+      this.specialCharValidator()
+    ]),
     notes: this.fb.control<string>('', [Validators.maxLength(200)]),
   });
 
@@ -54,13 +61,53 @@ export class UserProfileComponent {
         notes: this.user.reminder,
       });
 
+      if (!this.user.avatar) {
+        this.user.avatar = 'ink.jpg';
+      }
       this.selectedImage$.set(this.user.avatar);
     }
   }
 
+  minLengthValidator(minLength: number): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value || '';
+      return value.length >= minLength ? null : { minLength: { requiredLength: minLength } };
+    };
+  }
+
+  uppercaseValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      return /[A-Z]/.test(control.value) ? null : { uppercase: true };
+    };
+  }
+
+  lowercaseValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      return /[a-z]/.test(control.value) ? null : { lowercase: true };
+    };
+  }
+
+  digitValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      return /\d/.test(control.value) ? null : { digit: true };
+    };
+  }
+
+  specialCharValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      return /[!@#$%^&*()[\]{}\-_=+\\|;:'",.<>?/]/.test(control.value) ? null : { specialChar: true };
+    };
+  }
+
   changePassword() {
+    Object.values(this.form.controls).forEach(control => {
+      control.markAsDirty();
+      control.markAsTouched();
+      control.updateValueAndValidity();
+    });
+
     if (this.form.invalid) {
-      return;
+        return;
     }
 
     const payload = {

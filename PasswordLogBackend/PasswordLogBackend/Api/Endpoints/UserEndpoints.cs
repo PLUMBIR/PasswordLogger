@@ -8,6 +8,8 @@ using PasswordLogBackend.Api.Common.Models;
 using PasswordLogBackend.Api.Queries;
 using System.Net.Mail;
 using System.Net;
+using System;
+using Microsoft.EntityFrameworkCore;
 
 namespace PasswordLogBackend.Api.Endpoints
 {
@@ -79,10 +81,14 @@ namespace PasswordLogBackend.Api.Endpoints
                     return Results.BadRequest(new { message = "Не удалось обновить фотку" });
             });
 
-            app.MapPost("user/send-reset-code", async (EmailModel request) =>
+            app.MapPost("user/send-reset-code", async (EmailModel request, DbContext db) =>
             {
-                await EmailSenderExtension.SendResetCodeAsync(request.Email);
-                return Results.Ok("Код отправлен.");
+                var user = await db.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+                if (user is null)
+                    return Results.BadRequest("Email не найден.");
+
+                var code = await EmailSenderExtension.SendResetCodeAsync(request.Email);
+                return Results.Ok(code);
             });
 
             app.MapPost("user/send-user-message", async (EmailModel request) =>

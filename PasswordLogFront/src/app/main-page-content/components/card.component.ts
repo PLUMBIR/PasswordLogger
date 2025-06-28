@@ -55,7 +55,7 @@ export interface CreditCardFormGroup {
         </div>
         <div class="modal-content">
             <div class="modal-content-inputs">
-                <form nz-form [formGroup]="form" (ngSubmit)="onSubmit()">
+                <form nz-form [formGroup]="form">
                     <div class="address-modal">
                         <div class="left-content">
                             <div class="input-item">
@@ -148,7 +148,7 @@ export interface CreditCardFormGroup {
             <button class="cancel-btn" (click)="closeModal()">
                 Отмена
             </button>
-            <button class="submit-btn" [disabled]="this.form.invalid" (click)="onSubmit()">
+            <button class="submit-btn" (click)="onSubmit()">
                 Сохранить
             </button>
         </div>
@@ -338,7 +338,7 @@ export class CreditCardModalComponent {
 
     form = new FormGroup<CreditCardFormGroup>({
         name: this.fb.control<string>('', [Validators.required]),
-        folder: this.fb.control<string>('', [Validators.required]),
+        folder: this.fb.control<string>('', []),
         nameOnCard: this.fb.control<string>('', [Validators.required]),
         number: this.fb.control<number | null>(null, [Validators.required]),
         securityCode: this.fb.control<number | null>(null, [Validators.required]),
@@ -376,6 +376,16 @@ export class CreditCardModalComponent {
     }
 
     onSubmit() {
+        Object.values(this.form.controls).forEach(control => {
+            control.markAsDirty();
+            control.markAsTouched();
+            control.updateValueAndValidity();
+        });
+
+        if (this.form.invalid) {
+            return;
+        }
+        
         const userId = this.authService.user$()?.id;
 
         if (userId) {

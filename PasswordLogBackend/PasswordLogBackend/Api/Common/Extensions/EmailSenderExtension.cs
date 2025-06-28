@@ -11,13 +11,14 @@ namespace PasswordLogBackend.Api.Common.Extensions
         private static readonly string _emailFrom = "passwordloggerggkttid@mail.ru";
         private static readonly string _password = "SHYghKQjmAVUz8l3bBF1";
 
-        public static async Task SendResetCodeAsync(string recipientEmail)
+        public static async Task<string> SendResetCodeAsync(string recipientEmail)
         {
             string code = new Random().Next(100000, 999999).ToString();
             string subject = "Сброс пароля";
             string body = $"Ваш код сброса пароля: {code}";
 
             await SendEmailAsync(recipientEmail, subject, body);
+            return code;
         }
 
         public static async Task SendUserMessageAsync(EmailModel request)

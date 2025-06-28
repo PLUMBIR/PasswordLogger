@@ -73,7 +73,6 @@ namespace PasswordLogBackend.Api.Commands
 
                 user.AddAddressItem(new AddressEntity(
                     command.Name,
-                    command.Folder,
                     command.Title,
                     command.FirstName,
                     command.MiddleName,
@@ -82,9 +81,12 @@ namespace PasswordLogBackend.Api.Commands
                     command.Address2,
                     command.Address3,
                     command.CityOrTown,
-                    command.MobilePhone,
-                    command.Notes
-                    ));
+                    command.MobilePhone
+                    )
+                {
+                    Folder = command.Folder,
+                    Notes = command.Notes
+                });
 
                 await _dbContext.SaveChangesAsync();
 

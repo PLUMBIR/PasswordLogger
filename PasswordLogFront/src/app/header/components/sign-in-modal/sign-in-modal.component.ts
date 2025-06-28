@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { NzModalModule, NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
 import { AbstractControl, FormControl, FormGroup, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -69,22 +69,29 @@ export interface SignInFormGroup {
         </nz-form-control>
       </nz-form-item>
       <nz-form-item class="last-form-item">
-        <nz-form-control
-          nzHasFeedback
-          nzErrorTip="Пожалуйста введите мастер пароль!"
-        >
-          <input
-            nz-input
-            type="password"
-            formControlName="password"
-            placeholder="Мастер пароль"
-          />
+        <nz-form-control nzHasFeedback nzErrorTip="Пожалуйста, введите пароль">
+          <nz-input-group [nzSuffix]="suffixTemplate">
+              <input
+                  [type]="passwordVisible$() ? 'text' : 'password'"
+                  nz-input
+                  id="password"
+                  formControlName="password"
+                  placeholder="Пароль"
+              />
+              <ng-template #suffixTemplate>
+                <nz-icon
+                    class="ant-input-password-icon"
+                    [nzType]="passwordVisible$() ? 'eye-invisible' : 'eye'"
+                    (click)="passwordVisible$.set(!passwordVisible$())"
+                />
+            </ng-template>
+          </nz-input-group>
         </nz-form-control>
       </nz-form-item>
     </form>
     <div *nzModalFooter>
       <div class="modal-footer">
-        <button class="modal-btn" [disabled]="this.form.invalid" (click)="onSubmit()">Войти</button>
+        <button class="modal-btn" (click)="onSubmit()">Войти</button>
         <div>
           <a class="forgot-password" (click)="openResetPasswordModal()">Забыли пароль?</a>
         </div>
@@ -224,9 +231,21 @@ export interface SignInFormGroup {
         background-color: #fff;
         border: solid 1px #c3cbcb;
         border-radius: 5px;
-        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15);
         font-family: 'Gibson', 'Open Sans', 'Helvetica', Arial, sans-serif;
         font-size: 16px;
+      }
+
+      nz-input-group {
+        width: 100%;
+        height: 50px;
+        border: solid 1px #c3cbcb;
+        border-radius: 5px;
+        font-family: 'Gibson', 'Open Sans', 'Helvetica', Arial, sans-serif;
+        font-size: 16px;
+
+        input {
+          height: 40px;
+        }
       }
     `,
   ],
@@ -238,6 +257,7 @@ export class SignInModalComponent {
   private fb = inject(NonNullableFormBuilder);
   private signUpModalFactory = SignUpModalComponent.factory();
   private resetPasswordModalFactory = ResetPasswordComponent.factory();
+  passwordVisible$ = signal<boolean>(false);
 
   constructor(
     private readonly authService: AuthService,
@@ -282,6 +302,16 @@ export class SignInModalComponent {
   }
 
   onSubmit() {
+    Object.values(this.form.controls).forEach(control => {
+      control.markAsDirty();
+      control.markAsTouched();
+      control.updateValueAndValidity();
+    });
+
+    if (this.form.invalid) {
+        return;
+    }
+    
     const data = this.formValues;
 
     const command = {
@@ -316,3 +346,4 @@ export class SignInModalComponent {
     this.resetPasswordModalFactory();
   }
 }
+

@@ -1,7 +1,7 @@
 export interface AddressModel {
     userId: string;
     name: string;
-    folder: string;
+    folder?: string;
     title: string;
     firstName: string;
     middleName?: string;

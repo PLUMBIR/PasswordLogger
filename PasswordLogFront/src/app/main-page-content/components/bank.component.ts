@@ -56,7 +56,7 @@ export interface BankFormGroup {
         </div>
         <div class="modal-content">
             <div class="modal-content-inputs">
-                <form nz-form [formGroup]="form" (ngSubmit)="onSubmit()">
+                <form nz-form [formGroup]="form">
                     <div class="address-modal">
                         <div class="left-content">
                             <div class="input-item">
@@ -189,7 +189,7 @@ export interface BankFormGroup {
             <button class="cancel-btn" (click)="closeModal()">
                 Отмена
             </button>
-            <button class="submit-btn" [disabled]="this.form.invalid" (click)="onSubmit()">
+            <button class="submit-btn" (click)="onSubmit()">
                 Сохранить
             </button>
         </div>
@@ -402,7 +402,7 @@ export class BankAccountModalComponent {
 
     form = new FormGroup<BankFormGroup>({
         name: this.fb.control<string>('', [Validators.required]),
-        folder: this.fb.control<string>('', [Validators.required]),
+        folder: this.fb.control<string>('', []),
         bankName: this.fb.control<string>('', [Validators.required]),
         accountNumber: this.fb.control<string>('', [Validators.required]),
         SWIFTCode: this.fb.control<string>(''),
@@ -442,6 +442,16 @@ export class BankAccountModalComponent {
     }
 
     onSubmit() {
+        Object.values(this.form.controls).forEach(control => {
+            control.markAsDirty();
+            control.markAsTouched();
+            control.updateValueAndValidity();
+        });
+
+        if (this.form.invalid) {
+            return;
+        }
+
         const userId = this.authService.user$()?.id;
 
         if (userId) {

@@ -32,7 +32,6 @@
 
         public AddressEntity(
             string name, 
-            string folder, 
             string title, 
             string firstName, 
             string middleName, 
@@ -41,11 +40,9 @@
             string address2, 
             string address3, 
             string cityOrTown,  
-            string mobilePhone, 
-            string notes)
+            string mobilePhone)
         {
             Name = name;
-            Folder = folder;
             Title = title;
             FirstName = firstName;
             MiddleName = middleName;
@@ -55,7 +52,6 @@
             Address3 = address3;
             CityOrTown = cityOrTown;
             MobilePhone = mobilePhone;
-            Notes = notes;
         }
     }
 }

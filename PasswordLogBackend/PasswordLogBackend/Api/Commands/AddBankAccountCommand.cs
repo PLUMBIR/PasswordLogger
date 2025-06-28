@@ -63,13 +63,13 @@ namespace PasswordLogBackend.Api.Commands
 
             user.AddBankAccountItem(new BankAccountEntity(
                 command.Name,
-                command.Folder,
                 command.BankName,
                 command.AccountNumber,
                 command.PIN,
                 command.BranchPhone
                 )
             {
+                Folder = command.Folder,
                 SWIFTCode = command.SWIFTCode,
                 IBANNumber= command.IBANNumber,
                 Notes = command.Notes

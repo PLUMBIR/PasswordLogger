@@ -1,7 +1,7 @@
 export interface CreditCardModel {
     userId: string;
     name: string;
-    folder: string;
+    folder?: string;
     nameOnCard: string;
     number: number;
     securityCode: number;

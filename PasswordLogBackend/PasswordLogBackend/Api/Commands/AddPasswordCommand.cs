@@ -51,7 +51,7 @@ namespace PasswordLogBackend.Api.Commands
                    throw new NotFoundException($"Пользователь с {command.UserId} не найден.");         
             }
 
-            user.AddPasswordItem(new PasswordEntity(command.Url, command.Name, command.Folder, command.Username, PasswordEncryptExtension.Encrypt(command.Password)) { Notes = command.Notes});
+            user.AddPasswordItem(new PasswordEntity(command.Url, command.Name, command.Username, PasswordEncryptExtension.Encrypt(command.Password)) { Folder = command.Folder, Notes = command.Notes});
 
             await _dbContext.SaveChangesAsync();
 

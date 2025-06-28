@@ -53,10 +53,10 @@ export interface PasswordFormGroup {
         </div>
         <div class="modal-content">
             <div class="modal-content-inputs">
-                <form nz-form [formGroup]="form" (ngSubmit)="onSubmit()">
+                <form nz-form [formGroup]="form">
                     <span>URL:</span>
                     <nz-form-item>
-                        <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Пожалуйста, напишите URL">
+                        <nz-form-control nzHasFeedback nzErrorTip="Пожалуйста, напишите URL">
                             <input nz-input id="URL" formControlName="url" placeholder="URL" />
                         </nz-form-control>
                     </nz-form-item>
@@ -64,7 +64,7 @@ export interface PasswordFormGroup {
                         <div class="input-item" style="margin-right: 36px;">
                             <span>Имя:</span>
                             <nz-form-item>
-                                <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Пожалуйста, введите имя">
+                                <nz-form-control nzHasFeedback nzErrorTip="Пожалуйста, введите имя">
                                     <input nz-input id="name" formControlName="name" placeholder="Имя" />
                                 </nz-form-control>
                             </nz-form-item>
@@ -72,7 +72,7 @@ export interface PasswordFormGroup {
                         <div class="input-item">
                             <span>Папка:</span>
                             <nz-form-item>
-                                <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Пожалуйста, укажите папку">
+                                <nz-form-control nzErrorTip="Пожалуйста, укажите папку">
                                     <input nz-input id="folder" formControlName="folder" placeholder="Папка" />
                                 </nz-form-control>
                             </nz-form-item>
@@ -80,7 +80,7 @@ export interface PasswordFormGroup {
                         <div class="input-item" style="margin-right: 36px;">
                             <span>Имя пользователя:</span>
                             <nz-form-item>
-                                <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Пожалуйста, введите имя пользователя">
+                                <nz-form-control nzHasFeedback nzErrorTip="Пожалуйста, введите имя пользователя">
                                     <input nz-input id="username" formControlName="username" placeholder="Имя пользователя" />
                                 </nz-form-control>
                             </nz-form-item>
@@ -88,7 +88,7 @@ export interface PasswordFormGroup {
                         <div class="input-item">
                             <span>Пароль:</span>
                             <nz-form-item>
-                                <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="Пожалуйста, введите пароль">
+                                <nz-form-control nzHasFeedback nzErrorTip="Пожалуйста, введите пароль">
                                     <nz-input-group [nzSuffix]="suffixTemplate">
                                         <input
                                             [type]="passwordVisible$() ? 'text' : 'password'"
@@ -106,13 +106,19 @@ export interface PasswordFormGroup {
                                         [nzType]="passwordVisible$() ? 'eye-invisible' : 'eye'"
                                         (click)="passwordVisible$.set(!passwordVisible$())"
                                     />
+                                    <nz-icon
+                                        class="ant-input-password-icon"
+                                        nzType="lock"
+                                        (click)="onGeneratePassword()"
+                                        style="margin-left: 8px; cursor: pointer;"
+                                    ></nz-icon>
                                 </ng-template>
                             </nz-form-item>
                         </div>
                     </div>
                     <span>Примечания:</span>
                     <nz-form-item style="margin-bottom: 0px;">
-                        <nz-form-control [nzSpan]="12" nzHasFeedback>
+                        <nz-form-control [nzSpan]="12">
                             <nz-textarea-count [nzMaxCharacterCount]="200">
                                 <textarea formControlName="notes" nz-input rows="2"></textarea>
                             </nz-textarea-count>
@@ -125,7 +131,7 @@ export interface PasswordFormGroup {
             <button class="cancel-btn" (click)="closeModal()">
                 Отмена
             </button>
-            <button class="submit-btn" [disabled]="this.form.invalid" (click)="onSubmit()">
+            <button class="submit-btn" (click)="onSubmit()">
                 Сохранить
             </button>
         </div>
@@ -263,12 +269,12 @@ export class PasswordModalComponent implements OnInit {
     ) {}
 
     form = new FormGroup<PasswordFormGroup>({
-        url: this.fb.control<string>('', [Validators.required]),
-        name: this.fb.control<string>('', [Validators.required]),
-        folder: this.fb.control<string>('', [Validators.required]),
-        username: this.fb.control<string>('', [Validators.required]),
-        password: this.fb.control<string>('', [Validators.required]),
-        notes: this.fb.control<string>('', [Validators.maxLength(200)]),
+        url: this.fb.control('', [Validators.required]),
+        name: this.fb.control('', [Validators.required]),
+        folder: this.fb.control('', []),
+        username: this.fb.control('', [Validators.required]),
+        password: this.fb.control('', [Validators.required]),
+        notes: this.fb.control('', [Validators.maxLength(200)]),
     });
 
     ngOnInit(): void {
@@ -298,6 +304,16 @@ export class PasswordModalComponent implements OnInit {
     }
 
     onSubmit() {
+        Object.values(this.form.controls).forEach(control => {
+            control.markAsDirty();
+            control.markAsTouched();
+            control.updateValueAndValidity();
+        });
+
+        if (this.form.invalid) {
+            return;
+        }
+
         const userId = this.authService.user$()?.id;
         if (userId) {
             const data = this.formValues;
@@ -309,7 +325,7 @@ export class PasswordModalComponent implements OnInit {
                 userId: userId,
                 url: data.url!,
                 name: data.name!,
-                folder: data.folder!,
+                folder: data.folder,
                 username: data.username!,
                 sitePassword: data.password!,
                 notes: data.notes,
@@ -339,6 +355,22 @@ export class PasswordModalComponent implements OnInit {
                 });
             }
         }
+    }
+
+    onGeneratePassword(): void {
+        const command = {
+        length: 10,
+        includeUppercase: true,
+        includeLowercase: true,
+        includeNumbers: true,
+        includeSymbols: true
+        };
+
+        this.userService.generatePassword(command).subscribe({
+        next: (result) => {
+            this.form.get('password')?.setValue(result.toString());
+        }
+        });
     }
 
     static factory() {

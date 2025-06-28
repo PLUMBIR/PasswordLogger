@@ -24,10 +24,9 @@
         {
         }
 
-        public BankAccountEntity(string name, string folder, string bankName, string accountNumber, int pin, string branchPhone)
+        public BankAccountEntity(string name, string bankName, string accountNumber, int pin, string branchPhone)
         {
             Name = name;
-            Folder = folder;
             BankName = bankName;
             AccountNumber = accountNumber;
             PIN = pin;
