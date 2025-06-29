@@ -50,6 +50,18 @@ document.addEventListener("DOMContentLoaded", async function() {
     }
 });
 
+const iconDictionary = {
+    "twitch": "../images/twitch.png",
+    "github": "../images/github.png",
+    "google": "../images/google.png",
+    "facebook": "../images/facebook.png",
+    "faceit": "../images/faceit.png",
+    "instagram": "../images/instagram.png",
+    "steam": "../images/steam.png",
+    "vk": "../images/vk.png",
+    "youtube": "../images/youtube.png"
+};
+
 function displayPasswords(passwords) {
     let cardsContainer = document.querySelector(".cards");
     cardsContainer.innerHTML = "";
@@ -57,10 +69,13 @@ function displayPasswords(passwords) {
     passwords.forEach(password => {
         let cardElement = document.createElement("div");
         cardElement.classList.add("card");
+
+        const iconFileName = iconDictionary[password.name] || "https://img.icons8.com/ios-glyphs/30/password--v1.png";
+
         cardElement.innerHTML = `
             <div class="card-info">
                 <div class="card-info-img">
-                    <img width="30" height="30" src="https://img.icons8.com/ios-glyphs/30/password--v1.png" alt="password"/>
+                    <img width="30" height="30" src="${iconFileName}" alt="${password.name}"/>
                 </div>
                 <div class="card-info-user">
                     <div class="card-name">${password.name}</div>
@@ -118,10 +133,12 @@ function displayPasswords(passwords) {
 
         cardElement.querySelector(".copy-name").addEventListener("click", () => {
             navigator.clipboard.writeText(password.name);
+            dropdownMenu.classList.add("hidden");
         });
 
         cardElement.querySelector(".copy-password").addEventListener("click", () => {
             navigator.clipboard.writeText(password.sitePassword);
+            dropdownMenu.classList.add("hidden");
         });
 
         cardElement.querySelector(".delete").addEventListener("click", async () => {
@@ -141,11 +158,11 @@ function displayPasswords(passwords) {
 
                 if (response.ok) {
                     cardElement.remove();
-                } else {
-                    console.error("Ошибка удаления карточки!");
+                    dropdownMenu.classList.add("hidden");
                 }
             } catch (error) {
-                console.error("Ошибка запроса:", error);
+                alert("Ошибка запроса:", error);
+                dropdownMenu.classList.add("hidden");
             }
         });
 
@@ -203,4 +220,14 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
     });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    const link = document.getElementById("logger-link");
+
+    if (link) {
+        link.addEventListener("click", () => {
+            window.open("http://localhost:4200/", "_blank");
+        });
+    }
 });

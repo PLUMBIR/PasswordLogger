@@ -314,6 +314,8 @@ export class PasswordModalComponent implements OnInit {
             return;
         }
 
+        console.log(this.formValues.password)
+
         const userId = this.authService.user$()?.id;
         if (userId) {
             const data = this.formValues;

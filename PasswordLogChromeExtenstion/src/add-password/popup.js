@@ -1,10 +1,32 @@
 document.querySelector(".btn-submit").addEventListener("click", async () => {
+    const requiredFields = [
+        { id: "website", name: "URL" },
+        { id: "site-name", name: "Имя сайта" },
+        { id: "username", name: "Имя пользователя" },
+        { id: "password", name: "Пароль" }
+    ];
+
+    let hasErrors = false;
+
+    requiredFields.forEach(field => {
+        const input = document.getElementById(field.id);
+        input.classList.remove("input-error"); // Сброс предыдущего состояния
+        if (!input.value.trim()) {
+            input.classList.add("input-error");
+            hasErrors = true;
+        }
+    });
+
+    if (hasErrors) {
+        return;
+    }
+
     const data = {
         userId: localStorage.getItem("userId"),
-        url: document.getElementById("website").value,
-        name: document.getElementById("site-name").value,
-        username: document.getElementById("username").value,
-        password: document.getElementById("password").value,
+        url: document.getElementById("website").value.trim(),
+        name: document.getElementById("site-name").value.trim(),
+        username: document.getElementById("username").value.trim(),
+        password: document.getElementById("password").value.trim(),
         folder: document.getElementById("folder").value,
         notes: document.getElementById("notes").value
     };

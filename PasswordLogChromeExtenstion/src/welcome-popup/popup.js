@@ -80,3 +80,23 @@ document.getElementById("email").addEventListener("input", function() {
 document.getElementById("password").addEventListener("input", function() {
     document.getElementById("passwordError").style.display = "none";
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+    const link = document.getElementById("register-link");
+
+    if (link) {
+        link.addEventListener("click", () => {
+            window.open("http://localhost:4200/", "_blank");
+        });
+    }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    const link = document.getElementById("remember-password-link");
+
+    if (link) {
+        link.addEventListener("click", () => {
+            window.open("http://localhost:4200/", "_blank");
+        });
+    }
+});
